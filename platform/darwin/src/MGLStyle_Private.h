@@ -5,6 +5,8 @@
 #import <mbgl/util/default_styles.hpp>
 #include <mbgl/mbgl.hpp>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class MGLAttributionInfo;
 
 @interface MGLStyle (Private)
@@ -13,8 +15,10 @@
 
 @property (nonatomic, readonly, weak) MGLMapView *mapView;
 
-@property (nonatomic, readonly) NS_ARRAY_OF(MGLAttributionInfo *) *attributionInfos;
+- (nullable NS_ARRAY_OF(MGLAttributionInfo *) *)attributionInfosWithFontSize:(CGFloat)fontSize linkColor:(nullable MGLColor *)linkColor;
 
 - (void)setStyleClasses:(NS_ARRAY_OF(NSString *) *)appliedClasses transitionDuration:(NSTimeInterval)transitionDuration;
 
 @end
+
+NS_ASSUME_NONNULL_END
