@@ -198,7 +198,6 @@ static NSURL *MGLStyleURL_emerald;
     // depends on the sources being sorted in ascending order by creation, as
     // with the std::vector used in mbgl.
     auto rawSources = self.mapView.mbglMap->getSources();
-    NSMutableSet *seenTitles = [NSMutableSet setWithCapacity:rawSources.size()];
     NSMutableArray *infos = [NSMutableArray arrayWithCapacity:rawSources.size()];
     for (auto rawSource = rawSources.begin(); rawSource != rawSources.end(); ++rawSource) {
         MGLSource *source = [self sourceFromMBGLSource:*rawSource];
@@ -208,14 +207,7 @@ static NSURL *MGLStyleURL_emerald;
         }
         
         NSArray *tileSetInfos = [[(id)source tileSet] attributionInfosWithFontSize:fontSize linkColor:linkColor];
-        for (MGLAttributionInfo *info in tileSetInfos) {
-            // Omit redundant attribution strings.
-            if ([seenTitles containsObject:info.title.string]) {
-                continue;
-            }
-            [seenTitles addObject:info.title.string];
-            [infos addObject:info];
-        }
+        [infos growArrayByAddingAttributionInfosFromArray:tileSetInfos];
     }
     return infos;
 }
