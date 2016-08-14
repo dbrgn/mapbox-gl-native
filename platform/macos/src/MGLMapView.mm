@@ -354,6 +354,7 @@ public:
 
 /// Adds legally required map attribution to the lower-left corner.
 - (void)installAttributionView {
+    [_attributionView removeFromSuperview];
     _attributionView = [[NSView alloc] initWithFrame:NSZeroRect];
     _attributionView.wantsLayer = YES;
 
@@ -416,6 +417,9 @@ public:
 /// hard-coded to the standard Mapbox and OpenStreetMap attribution.
 - (void)updateAttributionView {
     NSView *attributionView = self.attributionView;
+    for (NSView *button in attributionView.subviews) {
+        [button removeConstraints:button.constraints];
+    }
     attributionView.subviews = @[];
     [attributionView removeConstraints:attributionView.constraints];
     
@@ -461,7 +465,7 @@ public:
                                        constant:0]];
     }
     
-    if (attributionView.subviews.count) {
+    if (attributionInfos.count) {
         [attributionView addConstraint:
          [NSLayoutConstraint constraintWithItem:attributionView
                                       attribute:NSLayoutAttributeTrailing
@@ -918,7 +922,8 @@ public:
         }
         case mbgl::MapChangeSourceDidChange:
         {
-            [self updateAttributionView];
+            [self installAttributionView];
+            self.needsUpdateConstraints = YES;
             break;
         }
     }
