@@ -20,6 +20,7 @@
         if ([MGLOfflineStorage sharedOfflineStorage].packs) {
             [expectation fulfill];
         } else {
+            XCTAssertNil([MGLOfflineStorage sharedOfflineStorage].packs, @"Shared offline storage objects populated packs sooner than expected.");
             [self waitForExpectationsWithTimeout:2 handler:nil];
         }
         
