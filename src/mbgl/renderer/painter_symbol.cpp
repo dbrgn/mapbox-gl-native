@@ -52,7 +52,7 @@ void Painter::renderSymbol(PaintParameters& parameters,
             *buffers.vertexBuffer,
             *buffers.indexBuffer,
             buffers.segments,
-            layer.impl->paint.evaluated
+            {}
         );
     };
 

@@ -46,13 +46,13 @@ public:
 
     // Paint properties
 
-    static PropertyValue<float> getDefaultLineOpacity();
-    PropertyValue<float> getLineOpacity(const optional<std::string>& klass = {}) const;
-    void setLineOpacity(PropertyValue<float>, const optional<std::string>& klass = {});
+    static DataDrivenPropertyValue<float> getDefaultLineOpacity();
+    DataDrivenPropertyValue<float> getLineOpacity(const optional<std::string>& klass = {}) const;
+    void setLineOpacity(DataDrivenPropertyValue<float>, const optional<std::string>& klass = {});
 
-    static PropertyValue<Color> getDefaultLineColor();
-    PropertyValue<Color> getLineColor(const optional<std::string>& klass = {}) const;
-    void setLineColor(PropertyValue<Color>, const optional<std::string>& klass = {});
+    static DataDrivenPropertyValue<Color> getDefaultLineColor();
+    DataDrivenPropertyValue<Color> getLineColor(const optional<std::string>& klass = {}) const;
+    void setLineColor(DataDrivenPropertyValue<Color>, const optional<std::string>& klass = {});
 
     static PropertyValue<std::array<float, 2>> getDefaultLineTranslate();
     PropertyValue<std::array<float, 2>> getLineTranslate(const optional<std::string>& klass = {}) const;
@@ -62,21 +62,21 @@ public:
     PropertyValue<TranslateAnchorType> getLineTranslateAnchor(const optional<std::string>& klass = {}) const;
     void setLineTranslateAnchor(PropertyValue<TranslateAnchorType>, const optional<std::string>& klass = {});
 
-    static PropertyValue<float> getDefaultLineWidth();
-    PropertyValue<float> getLineWidth(const optional<std::string>& klass = {}) const;
-    void setLineWidth(PropertyValue<float>, const optional<std::string>& klass = {});
+    static DataDrivenPropertyValue<float> getDefaultLineWidth();
+    DataDrivenPropertyValue<float> getLineWidth(const optional<std::string>& klass = {}) const;
+    void setLineWidth(DataDrivenPropertyValue<float>, const optional<std::string>& klass = {});
 
-    static PropertyValue<float> getDefaultLineGapWidth();
-    PropertyValue<float> getLineGapWidth(const optional<std::string>& klass = {}) const;
-    void setLineGapWidth(PropertyValue<float>, const optional<std::string>& klass = {});
+    static DataDrivenPropertyValue<float> getDefaultLineGapWidth();
+    DataDrivenPropertyValue<float> getLineGapWidth(const optional<std::string>& klass = {}) const;
+    void setLineGapWidth(DataDrivenPropertyValue<float>, const optional<std::string>& klass = {});
 
-    static PropertyValue<float> getDefaultLineOffset();
-    PropertyValue<float> getLineOffset(const optional<std::string>& klass = {}) const;
-    void setLineOffset(PropertyValue<float>, const optional<std::string>& klass = {});
+    static DataDrivenPropertyValue<float> getDefaultLineOffset();
+    DataDrivenPropertyValue<float> getLineOffset(const optional<std::string>& klass = {}) const;
+    void setLineOffset(DataDrivenPropertyValue<float>, const optional<std::string>& klass = {});
 
-    static PropertyValue<float> getDefaultLineBlur();
-    PropertyValue<float> getLineBlur(const optional<std::string>& klass = {}) const;
-    void setLineBlur(PropertyValue<float>, const optional<std::string>& klass = {});
+    static DataDrivenPropertyValue<float> getDefaultLineBlur();
+    DataDrivenPropertyValue<float> getLineBlur(const optional<std::string>& klass = {}) const;
+    void setLineBlur(DataDrivenPropertyValue<float>, const optional<std::string>& klass = {});
 
     static PropertyValue<std::vector<float>> getDefaultLineDasharray();
     PropertyValue<std::vector<float>> getLineDasharray(const optional<std::string>& klass = {}) const;

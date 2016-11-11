@@ -14,19 +14,16 @@ struct FillAntialias : PaintProperty<bool> {
     static bool defaultValue() { return true; }
 };
 
-struct FillOpacity : PaintProperty<float> {
+struct FillOpacity : DataDrivenPaintProperty<float, attributes::a_opacity> {
     static float defaultValue() { return 1; }
-    using Attribute = attributes::a_opacity;
 };
 
-struct FillColor : PaintProperty<Color> {
+struct FillColor : DataDrivenPaintProperty<Color, attributes::a_color> {
     static Color defaultValue() { return Color::black(); }
-    using Attribute = attributes::a_color;
 };
 
-struct FillOutlineColor : PaintProperty<Color> {
+struct FillOutlineColor : DataDrivenPaintProperty<Color, attributes::a_outline_color> {
     static Color defaultValue() { return {}; }
-    using Attribute = attributes::a_outline_color;
 };
 
 struct FillTranslate : PaintProperty<std::array<float, 2>> {

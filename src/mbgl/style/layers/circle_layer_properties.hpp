@@ -10,24 +10,20 @@
 namespace mbgl {
 namespace style {
 
-struct CircleRadius : PaintProperty<float> {
+struct CircleRadius : DataDrivenPaintProperty<float, attributes::a_radius> {
     static float defaultValue() { return 5; }
-    using Attribute = attributes::a_radius;
 };
 
-struct CircleColor : PaintProperty<Color> {
+struct CircleColor : DataDrivenPaintProperty<Color, attributes::a_color> {
     static Color defaultValue() { return Color::black(); }
-    using Attribute = attributes::a_color;
 };
 
-struct CircleBlur : PaintProperty<float> {
+struct CircleBlur : DataDrivenPaintProperty<float, attributes::a_blur> {
     static float defaultValue() { return 0; }
-    using Attribute = attributes::a_blur;
 };
 
-struct CircleOpacity : PaintProperty<float> {
+struct CircleOpacity : DataDrivenPaintProperty<float, attributes::a_opacity> {
     static float defaultValue() { return 1; }
-    using Attribute = attributes::a_opacity;
 };
 
 struct CircleTranslate : PaintProperty<std::array<float, 2>> {

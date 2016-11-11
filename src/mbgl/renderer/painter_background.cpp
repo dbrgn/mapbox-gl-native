@@ -16,14 +16,10 @@ void Painter::renderBackground(PaintParameters& parameters, const BackgroundLaye
     // glClear rather than this method.
     const BackgroundPaintProperties::Evaluated& background = layer.impl->paint.evaluated;
 
-    FillPaintProperties::Evaluated properties {
-        false,
-        background.get<BackgroundOpacity>(),
-        background.get<BackgroundColor>(),
-        background.get<BackgroundColor>(),
-        FillTranslate::defaultValue(),
-        FillTranslateAnchor::defaultValue(),
-        background.get<BackgroundPattern>()
+    FillProgram::PaintAttributeValues paintAttributes {
+        FillColor::Attribute::constantValue(background.get<BackgroundColor>()),
+        FillOutlineColor::Attribute::constantValue(background.get<BackgroundColor>()),
+        FillOpacity::Attribute::constantValue(background.get<BackgroundOpacity>())
     };
 
     if (!background.get<BackgroundPattern>().to.empty()) {
@@ -56,7 +52,7 @@ void Painter::renderBackground(PaintParameters& parameters, const BackgroundLaye
                 tileVertexBuffer,
                 tileTriangleIndexBuffer,
                 tileTriangleSegments,
-                properties
+                paintAttributes
             );
         }
     } else {
@@ -74,7 +70,7 @@ void Painter::renderBackground(PaintParameters& parameters, const BackgroundLaye
                 tileVertexBuffer,
                 tileTriangleIndexBuffer,
                 tileTriangleSegments,
-                properties
+                paintAttributes
             );
         }
     }

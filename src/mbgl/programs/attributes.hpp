@@ -2,23 +2,26 @@
 
 #include <mbgl/gl/attribute.hpp>
 #include <mbgl/gl/normalization.hpp>
-#include <mbgl/style/paint_property.hpp>
 
 #include <cstdint>
 
 namespace mbgl {
 namespace attributes {
 
-// Attributes common to several shaders.
+// Layout attributes
 
 MBGL_DEFINE_ATTRIBUTE(int16_t, 2, a_pos);
-MBGL_DEFINE_ATTRIBUTE(int16_t, 2, a_offset);
 MBGL_DEFINE_ATTRIBUTE(int16_t, 2, a_extrude);
 MBGL_DEFINE_ATTRIBUTE(uint16_t, 2, a_texture_pos);
 
 template <std::size_t N>
 struct a_data : gl::Attribute<a_data<N>, uint8_t, N> {
     static constexpr auto name = "a_data";
+};
+
+template <std::size_t N>
+struct a_offset : gl::Attribute<a_offset<N>, int16_t, N> {
+    static constexpr auto name = "a_offset";
 };
 
 // Paint attributes
@@ -81,7 +84,7 @@ struct a_width : gl::Attribute<a_width, float, 1> {
     }
 };
 
-struct a_gapwidth : gl::Attribute<a_gapwidth, float, 1> {
+struct a_gap_width : gl::Attribute<a_gap_width, float, 1> {
     static constexpr auto name = "a_gapwidth";
 
     static ConstantValue constantValue(float width) {
@@ -89,10 +92,11 @@ struct a_gapwidth : gl::Attribute<a_gapwidth, float, 1> {
     }
 };
 
-struct a_lineoffset : gl::Attribute<a_lineoffset, float, 1> {
+template <>
+struct a_offset<1> : gl::Attribute<a_offset<1>, int16_t, 1> {
     static constexpr auto name = "a_offset";
 
-    static ConstantValue constantValue(float offset) {
+    static ConstantValue constantValue(int16_t offset) {
         return {{ offset }};
     }
 };

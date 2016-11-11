@@ -10,11 +10,9 @@ namespace mbgl {
 
 using namespace style;
 
-LineBucket::LineBucket(uint32_t overscaling_) : overscaling(overscaling_) {
-}
-
-LineBucket::~LineBucket() {
-    // Do not remove. header file only contains forward definitions to unique pointers.
+LineBucket::LineBucket(style::LinePaintProperties::Evaluated propertyValues, uint32_t overscaling_)
+    : paintData(propertyValues),
+      overscaling(overscaling_) {
 }
 
 void LineBucket::addGeometry(const GeometryCollection& geometryCollection) {
@@ -22,7 +20,6 @@ void LineBucket::addGeometry(const GeometryCollection& geometryCollection) {
         addGeometry(line);
     }
 }
-
 
 /*
  * Sharp corners cause dashed lines to tilt because the distance along the line
@@ -427,6 +424,7 @@ void LineBucket::addPieSliceVertex(const GeometryCoordinate& currentVertex,
 void LineBucket::upload(gl::Context& context) {
     vertexBuffer = context.createVertexBuffer(std::move(vertices));
     indexBuffer = context.createIndexBuffer(std::move(triangles));
+    paintData.upload(context);
 
     // From now on, we're only going to render during the translucent pass.
     uploaded = true;

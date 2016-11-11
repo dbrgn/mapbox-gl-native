@@ -78,7 +78,7 @@ void Painter::renderRaster(PaintParameters& parameters,
         rasterVertexBuffer,
         tileTriangleIndexBuffer,
         rasterSegments,
-        properties
+        {}
     );
 }
 

@@ -1,4 +1,5 @@
 #include <mbgl/style/layers/line_layer_impl.hpp>
+#include <mbgl/style/property_evaluation_parameters.hpp>
 #include <mbgl/style/bucket_parameters.hpp>
 #include <mbgl/renderer/line_bucket.hpp>
 #include <mbgl/geometry/feature_index.hpp>
@@ -16,18 +17,20 @@ bool LineLayer::Impl::evaluate(const PropertyEvaluationParameters& parameters) {
     // for scaling dasharrays
     PropertyEvaluationParameters dashArrayParams = parameters;
     dashArrayParams.z = std::floor(dashArrayParams.z);
-    dashLineWidth = paint.evaluate<LineWidth>(dashArrayParams).value_or(LineWidth::defaultValue());
+    dashLineWidth = paint.evaluate<LineWidth>(dashArrayParams).evaluatedValueOr(LineWidth::defaultValue());
 
     paint.evaluate(parameters);
 
-    passes = (paint.evaluated.get<LineOpacity>() > 0 && paint.evaluated.get<LineColor>().a > 0 && paint.evaluated.get<LineWidth>() > 0)
+    passes = (paint.evaluated.get<LineOpacity>().evaluatedValueOr(1.0) > 0
+           && paint.evaluated.get<LineColor>().evaluatedValueOr(Color::black()).a > 0
+           && paint.evaluated.get<LineWidth>().evaluatedValueOr(1) > 0)
         ? RenderPass::Translucent : RenderPass::None;
 
     return paint.hasTransition();
 }
 
 std::unique_ptr<Bucket> LineLayer::Impl::createBucket(BucketParameters& parameters) const {
-    auto bucket = std::make_unique<LineBucket>(parameters.tileID.overscaleFactor());
+    auto bucket = std::make_unique<LineBucket>(paint.evaluated, parameters.tileID.overscaleFactor());
 
     bucket->layout = layout.evaluate(PropertyEvaluationParameters(parameters.tileID.overscaledZ));
 
@@ -42,14 +45,12 @@ std::unique_ptr<Bucket> LineLayer::Impl::createBucket(BucketParameters& paramete
 }
 
 float LineLayer::Impl::getLineWidth() const {
-    auto lineWidth = paint.evaluated.get<LineWidth>();
-    auto gapWidth = paint.evaluated.get<LineGapWidth>();
-    if (gapWidth && lineWidth && *gapWidth > 0) {
-        return *gapWidth + 2 * *lineWidth;
-    } else if (lineWidth) {
-        return *lineWidth;
+    float lineWidth = paint.evaluated.get<LineWidth>().evaluatedValueOr(LineWidth::defaultValue());
+    float gapWidth = paint.evaluated.get<LineGapWidth>().evaluatedValueOr(0);
+    if (gapWidth) {
+        return gapWidth + 2 * lineWidth;
     } else {
-        return LineWidth::defaultValue();
+        return lineWidth;
     }
 }
 
@@ -85,7 +86,7 @@ optional<GeometryCollection> offsetLine(const GeometryCollection& rings, const d
 
 float LineLayer::Impl::getQueryRadius() const {
     const std::array<float, 2>& translate = paint.evaluated.get<LineTranslate>();
-    auto offset = paint.evaluated.get<LineOffset>().value_or(LineOffset::defaultValue());
+    auto offset = paint.evaluated.get<LineOffset>().evaluatedValueOr(LineOffset::defaultValue());
     return getLineWidth() / 2.0 + std::abs(offset) + util::length(translate[0], translate[1]);
 }
 
@@ -100,7 +101,7 @@ bool LineLayer::Impl::queryIntersectsGeometry(
     auto translatedQueryGeometry = FeatureIndex::translateQueryGeometry(
             queryGeometry, paint.evaluated.get<LineTranslate>(), paint.evaluated.get<LineTranslateAnchor>(), bearing, pixelsToTileUnits);
 
-    auto offset = paint.evaluated.get<LineOffset>().value_or(LineOffset::defaultValue());
+    auto offset = paint.evaluated.get<LineOffset>().evaluatedValueOr(LineOffset::defaultValue());
     auto offsetGeometry = offsetLine(geometry, offset * pixelsToTileUnits);
 
     return util::polygonIntersectsBufferedMultiLine(

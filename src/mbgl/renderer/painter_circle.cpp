@@ -48,7 +48,7 @@ void Painter::renderCircle(PaintParameters& parameters,
         *bucket.vertexBuffer,
         *bucket.indexBuffer,
         bucket.segments,
-        properties
+        bucket.paintData.attributeValues()
     );
 }
 

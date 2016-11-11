@@ -3,6 +3,7 @@
 #include <mbgl/gl/program.hpp>
 #include <mbgl/programs/program_parameters.hpp>
 #include <mbgl/programs/attributes.hpp>
+#include <mbgl/style/paint_property.hpp>
 
 #include <cassert>
 
@@ -19,12 +20,55 @@ template <class Shaders,
 class Program<Shaders, Primitive, LayoutAttrs, Uniforms, style::PaintProperties<Ps...>> {
 public:
     using LayoutAttributes = LayoutAttrs;
-    using PaintAttributes = gl::Attributes<typename Ps::Attribute...>;
-    using Attributes = gl::ConcatenateAttributes<LayoutAttributes, PaintAttributes>;
-
     using LayoutVertex = typename LayoutAttributes::Vertex;
-    using PaintValues = typename PaintAttributes::Values;
 
+    using PaintProperties = style::PaintProperties<Ps...>;
+    using PaintAttributes = gl::Attributes<typename Ps::Attribute...>;
+    using PaintAttributeValues = typename PaintAttributes::Values;
+
+    class PaintData {
+    public:
+        using VertexVectors = typename PaintProperties::template Tuple<
+            TypeList<optional<typename Ps::VertexVector>...>>;
+        using VertexBuffers = typename PaintProperties::template Tuple<
+            TypeList<optional<typename Ps::VertexBuffer>...>>;
+        using AttributeValues = typename PaintProperties::template Tuple<
+            TypeList<typename Ps::AttributeValue...>>;
+
+        template <class Properties>
+        PaintData(const Properties& properties)
+            : vertexVectors(Ps::vertexVector(properties.template get<Ps>())...)
+        {
+            util::ignore({
+                (Ps::setAttributeValueIfConstant(attributeValues_.template get<Ps>(),
+                                                 properties.template get<Ps>()), 0)...
+            });
+        }
+
+        void upload(gl::Context& context) {
+            vertexBuffers = VertexBuffers {
+                Ps::vertexBuffer(context, std::move(vertexVectors.template get<Ps>()))...
+            };
+
+            util::ignore({
+                (Ps::setAttributeValueIfVariable(attributeValues_.template get<Ps>(),
+                                                 vertexBuffers.template get<Ps>()), 0)...
+            });
+        }
+
+        PaintAttributeValues attributeValues() {
+            return PaintAttributeValues {
+                attributeValues_.template get<Ps>()...
+            };
+        }
+
+    private:
+        VertexVectors vertexVectors;
+        VertexBuffers vertexBuffers;
+        AttributeValues attributeValues_;
+    };
+
+    using Attributes = gl::ConcatenateAttributes<LayoutAttributes, PaintAttributes>;
     using ProgramType = gl::Program<Primitive, Attributes, Uniforms>;
     using UniformValues = typename ProgramType::UniformValues;
 
@@ -51,14 +95,7 @@ public:
         return pixelRatioDefine(parameters) + Shaders::vertexSource;
     }
 
-    template <class AllProperties>
-    static PaintValues paintPropertyValues(const AllProperties& properties) {
-        return {
-            Ps::Attribute::constantValue(properties.template get<Ps>())...
-        };
-    }
-
-    template <class DrawMode, class AllPaintProperties>
+    template <class DrawMode>
     void draw(gl::Context& context,
               DrawMode drawMode,
               gl::DepthMode depthMode,
@@ -68,7 +105,7 @@ public:
               const gl::VertexBuffer<LayoutVertex>& layoutVertexBuffer,
               const gl::IndexBuffer<DrawMode>& indexBuffer,
               const gl::SegmentVector<Attributes>& segments,
-              const AllPaintProperties& properties) {
+              const PaintAttributeValues& paintAttributeValues) {
         program.draw(
             context,
             std::move(drawMode),
@@ -77,7 +114,7 @@ public:
             std::move(colorMode),
             std::move(uniformValues),
             LayoutAttributes::allVariableValues(layoutVertexBuffer)
-                .concat(paintPropertyValues(properties)),
+                .concat(paintAttributeValues),
             indexBuffer,
             segments
         );

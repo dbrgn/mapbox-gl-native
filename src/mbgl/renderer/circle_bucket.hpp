@@ -7,12 +7,13 @@
 #include <mbgl/gl/index_buffer.hpp>
 #include <mbgl/gl/segment.hpp>
 #include <mbgl/programs/circle_program.hpp>
+#include <mbgl/style/layers/circle_layer_properties.hpp>
 
 namespace mbgl {
 
 class CircleBucket : public Bucket {
 public:
-    CircleBucket(const MapMode);
+    CircleBucket(style::CirclePaintProperties::Evaluated, MapMode);
 
     void upload(gl::Context&) override;
     void render(Painter&, PaintParameters&, const style::Layer&, const RenderTile&) override;
@@ -26,6 +27,8 @@ public:
 
     optional<gl::VertexBuffer<CircleLayoutVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Triangles>> indexBuffer;
+
+    CircleProgram::PaintData paintData;
 
     const MapMode mode;
 };

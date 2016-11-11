@@ -246,6 +246,7 @@ set(MBGL_CORE_FILES
     src/mbgl/style/types.cpp
     src/mbgl/style/update_batch.hpp
     src/mbgl/style/update_parameters.hpp
+    src/mbgl/style/zoom_function.cpp
 
     # style/conversion
     include/mbgl/style/conversion/constant.hpp

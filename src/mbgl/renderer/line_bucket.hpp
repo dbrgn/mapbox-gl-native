@@ -14,8 +14,7 @@ namespace mbgl {
 
 class LineBucket : public Bucket {
 public:
-    LineBucket(uint32_t overscaling);
-    ~LineBucket() override;
+    LineBucket(style::LinePaintProperties::Evaluated, uint32_t overscaling);
 
     void upload(gl::Context&) override;
     void render(Painter&, PaintParameters&, const style::Layer&, const RenderTile&) override;
@@ -32,6 +31,8 @@ public:
 
     optional<gl::VertexBuffer<LineLayoutVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Triangles>> indexBuffer;
+
+    LineProgram::PaintData paintData;
 
 private:
     struct TriangleElement {

@@ -33,7 +33,7 @@ MBGL_DEFINE_UNIFORM_SCALAR(float, u_aspect_ratio);
 
 struct SymbolLayoutAttributes : gl::Attributes<
     attributes::a_pos,
-    attributes::a_offset,
+    attributes::a_offset<2>,
     attributes::a_texture_pos,
     attributes::a_data<4>>
 {

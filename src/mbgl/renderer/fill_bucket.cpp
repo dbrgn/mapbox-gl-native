@@ -26,6 +26,10 @@ using namespace style;
 
 struct GeometryTooLongException : std::exception {};
 
+FillBucket::FillBucket(FillPaintProperties::Evaluated propertyValues)
+    : paintData(propertyValues) {
+}
+
 void FillBucket::addGeometry(const GeometryCollection& geometry) {
     for (auto& polygon : classifyRings(geometry)) {
         // Optimize polygons with many interior rings for earcut tesselation.
@@ -95,6 +99,7 @@ void FillBucket::upload(gl::Context& context) {
     vertexBuffer = context.createVertexBuffer(std::move(vertices));
     lineIndexBuffer = context.createIndexBuffer(std::move(lines));
     triangleIndexBuffer = context.createIndexBuffer(std::move(triangles));
+    paintData.upload(context);
 
     // From now on, we're going to render during the opaque and translucent pass.
     uploaded = true;

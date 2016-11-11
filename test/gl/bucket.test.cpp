@@ -10,21 +10,25 @@
 #include <mbgl/map/mode.hpp>
 
 TEST(Buckets, CircleBucket) {
+    mbgl::style::CirclePaintProperties::Evaluated properties;
     mbgl::MapMode mapMode = mbgl::MapMode::Still;
 
-    mbgl::CircleBucket bucket { mapMode };
+    mbgl::CircleBucket bucket { properties, mapMode };
     ASSERT_FALSE(bucket.hasData());
 }
 
 TEST(Buckets, FillBucket) {
-    mbgl::FillBucket bucket;
+    mbgl::style::FillPaintProperties::Evaluated properties;
+
+    mbgl::FillBucket bucket { properties };
     ASSERT_FALSE(bucket.hasData());
 }
 
 TEST(Buckets, LineBucket) {
+    mbgl::style::LinePaintProperties::Evaluated properties;
     uint32_t overscaling = 0;
 
-    mbgl::LineBucket bucket { overscaling };
+    mbgl::LineBucket bucket { properties, overscaling };
     ASSERT_FALSE(bucket.hasData());
 }
 

@@ -26,14 +26,12 @@ struct LineRoundLimit : LayoutProperty<float> {
     static float defaultValue() { return 1; }
 };
 
-struct LineOpacity : PaintProperty<float> {
+struct LineOpacity : DataDrivenPaintProperty<float, attributes::a_opacity> {
     static float defaultValue() { return 1; }
-    using Attribute = attributes::a_opacity;
 };
 
-struct LineColor : PaintProperty<Color> {
+struct LineColor : DataDrivenPaintProperty<Color, attributes::a_color> {
     static Color defaultValue() { return Color::black(); }
-    using Attribute = attributes::a_color;
 };
 
 struct LineTranslate : PaintProperty<std::array<float, 2>> {
@@ -44,24 +42,20 @@ struct LineTranslateAnchor : PaintProperty<TranslateAnchorType> {
     static TranslateAnchorType defaultValue() { return TranslateAnchorType::Map; }
 };
 
-struct LineWidth : PaintProperty<float> {
+struct LineWidth : DataDrivenPaintProperty<float, attributes::a_width> {
     static float defaultValue() { return 1; }
-    using Attribute = attributes::a_width;
 };
 
-struct LineGapWidth : PaintProperty<float> {
+struct LineGapWidth : DataDrivenPaintProperty<float, attributes::a_gap_width> {
     static float defaultValue() { return 0; }
-    using Attribute = attributes::a_gapwidth;
 };
 
-struct LineOffset : PaintProperty<float> {
+struct LineOffset : DataDrivenPaintProperty<float, attributes::a_offset<1>> {
     static float defaultValue() { return 0; }
-    using Attribute = attributes::a_lineoffset;
 };
 
-struct LineBlur : PaintProperty<float> {
+struct LineBlur : DataDrivenPaintProperty<float, attributes::a_blur> {
     static float defaultValue() { return 0; }
-    using Attribute = attributes::a_blur;
 };
 
 struct LineDasharray : CrossFadedPaintProperty<std::vector<float>> {

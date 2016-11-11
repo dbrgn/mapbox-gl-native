@@ -38,7 +38,6 @@ void Painter::renderFill(PaintParameters& parameters,
         auto draw = [&] (uint8_t sublayer,
                          auto& program,
                          const auto& drawMode,
-                         const auto& vertexBuffer,
                          const auto& indexBuffer,
                          const auto& segments) {
             program.draw(
@@ -58,17 +57,16 @@ void Painter::renderFill(PaintParameters& parameters,
                     tile.id,
                     state
                 ),
-                vertexBuffer,
+                *bucket.vertexBuffer,
                 indexBuffer,
                 segments,
-                properties
+                bucket.paintData.attributeValues()
             );
         };
 
         draw(0,
              parameters.programs.fillPattern,
              gl::Triangles(),
-             *bucket.vertexBuffer,
              *bucket.triangleIndexBuffer,
              bucket.triangleSegments);
 
@@ -79,17 +77,14 @@ void Painter::renderFill(PaintParameters& parameters,
         draw(2,
              parameters.programs.fillOutlinePattern,
              gl::Lines { 2.0f },
-             *bucket.vertexBuffer,
              *bucket.lineIndexBuffer,
              bucket.lineSegments);
     } else {
         auto draw = [&] (uint8_t sublayer,
                          auto& program,
                          const auto& drawMode,
-                         const auto& vertexBuffer,
                          const auto& indexBuffer,
-                         const auto& segments,
-                         const FillPaintProperties::Evaluated& properties_) {
+                         const auto& segments) {
             program.draw(
                 context,
                 drawMode,
@@ -97,15 +92,17 @@ void Painter::renderFill(PaintParameters& parameters,
                 stencilModeForClipping(tile.clip),
                 colorModeForRenderPass(),
                 FillProgram::UniformValues {
-                    uniforms::u_matrix::Value{ tile.translatedMatrix(properties_.get<FillTranslate>(),
-                                               properties_.get<FillTranslateAnchor>(),
-                                               state) },
+                    uniforms::u_matrix::Value{
+                        tile.translatedMatrix(properties.get<FillTranslate>(),
+                                              properties.get<FillTranslateAnchor>(),
+                                              state)
+                    },
                     uniforms::u_world::Value{ context.viewport.getCurrentValue().size },
                 },
-                vertexBuffer,
+                *bucket.vertexBuffer,
                 indexBuffer,
                 segments,
-                properties_
+                bucket.paintData.attributeValues()
             );
         };
 
@@ -113,36 +110,30 @@ void Painter::renderFill(PaintParameters& parameters,
             draw(2,
                  parameters.programs.fillOutline,
                  gl::Lines { 2.0f },
-                 *bucket.vertexBuffer,
                  *bucket.lineIndexBuffer,
-                 bucket.lineSegments,
-                 properties);
+                 bucket.lineSegments);
         }
 
         // Only draw the fill when it's opaque and we're drawing opaque fragments,
         // or when it's translucent and we're drawing translucent fragments.
-        if ((properties.get<FillColor>().a >= 1.0f && properties.get<FillOpacity>() >= 1.0f) == (pass == RenderPass::Opaque)) {
+        if ((properties.get<FillColor>().evaluatedValueOr(Color()).a >= 1.0f
+          && properties.get<FillOpacity>().evaluatedValueOr(0) >= 1.0f) == (pass == RenderPass::Opaque)) {
             draw(1,
                  parameters.programs.fill,
                  gl::Triangles(),
-                 *bucket.vertexBuffer,
                  *bucket.triangleIndexBuffer,
-                 bucket.triangleSegments,
-                 properties);
+                 bucket.triangleSegments);
         }
 
         if (properties.get<FillAntialias>() && layer.impl->paint.unevaluated.get<FillOutlineColor>().isUndefined() && pass == RenderPass::Translucent) {
-
             FillPaintProperties::Evaluated properties_ = properties;
             properties_.get<FillOutlineColor>() = properties_.get<FillColor>();
 
             draw(2,
                  parameters.programs.fillOutline,
                  gl::Lines { 2.0f },
-                 *bucket.vertexBuffer,
                  *bucket.lineIndexBuffer,
-                 bucket.lineSegments,
-                 properties_);
+                 bucket.lineSegments);
         }
     }
 }

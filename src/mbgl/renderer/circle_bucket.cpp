@@ -10,12 +10,15 @@ namespace mbgl {
 
 using namespace style;
 
-CircleBucket::CircleBucket(MapMode mode_) : mode(mode_) {
+CircleBucket::CircleBucket(CirclePaintProperties::Evaluated propertyValues, MapMode mode_)
+    : paintData(propertyValues),
+      mode(mode_) {
 }
 
 void CircleBucket::upload(gl::Context& context) {
     vertexBuffer = context.createVertexBuffer(std::move(vertices));
     indexBuffer = context.createIndexBuffer(std::move(triangles));
+    paintData.upload(context);
     uploaded = true;
 }
 

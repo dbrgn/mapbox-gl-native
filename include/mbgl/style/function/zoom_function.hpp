@@ -15,6 +15,8 @@ public:
     ZoomFunction(Stops stops_, float base_)
         : base(base_), stops(std::move(stops_)) {}
 
+    T evaluate(float z) const;
+
     float getBase() const { return base; }
     const std::vector<std::pair<float, T>>& getStops() const { return stops; }
 
