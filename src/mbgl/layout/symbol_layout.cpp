@@ -468,13 +468,13 @@ void SymbolLayout::addSymbols(Buffer &buffer, const SymbolQuads &symbols, float 
         uint8_t glyphAngle = std::round((symbol.glyphAngle / (M_PI * 2)) * 256);
 
         // coordinates (2 triangles)
-        buffer.vertices.emplace_back(SymbolAttributes::vertex(anchorPoint, tl, tex.x, tex.y,
+        buffer.vertices.emplace_back(SymbolLayoutAttributes::vertex(anchorPoint, tl, tex.x, tex.y,
                             minZoom, maxZoom, placementZoom, glyphAngle));
-        buffer.vertices.emplace_back(SymbolAttributes::vertex(anchorPoint, tr, tex.x + tex.w, tex.y,
+        buffer.vertices.emplace_back(SymbolLayoutAttributes::vertex(anchorPoint, tr, tex.x + tex.w, tex.y,
                             minZoom, maxZoom, placementZoom, glyphAngle));
-        buffer.vertices.emplace_back(SymbolAttributes::vertex(anchorPoint, bl, tex.x, tex.y + tex.h,
+        buffer.vertices.emplace_back(SymbolLayoutAttributes::vertex(anchorPoint, bl, tex.x, tex.y + tex.h,
                             minZoom, maxZoom, placementZoom, glyphAngle));
-        buffer.vertices.emplace_back(SymbolAttributes::vertex(anchorPoint, br, tex.x + tex.w, tex.y + tex.h,
+        buffer.vertices.emplace_back(SymbolLayoutAttributes::vertex(anchorPoint, br, tex.x + tex.w, tex.y + tex.h,
                             minZoom, maxZoom, placementZoom, glyphAngle));
 
         // add the two triangles, referencing the four coordinates we just inserted.

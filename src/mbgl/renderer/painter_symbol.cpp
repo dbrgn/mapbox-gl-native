@@ -51,7 +51,8 @@ void Painter::renderSymbol(PaintParameters& parameters,
             std::move(uniformValues),
             *buffers.vertexBuffer,
             *buffers.indexBuffer,
-            buffers.segments
+            buffers.segments,
+            layer.impl->paint.evaluated
         );
     };
 
@@ -124,7 +125,8 @@ void Painter::renderSymbol(PaintParameters& parameters,
             },
             *bucket.collisionBox.vertexBuffer,
             *bucket.collisionBox.indexBuffer,
-            bucket.collisionBox.segments
+            bucket.collisionBox.segments,
+            style::PaintProperties<>::Evaluated()
         );
     }
 }

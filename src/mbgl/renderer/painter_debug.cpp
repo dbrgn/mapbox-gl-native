@@ -12,6 +12,8 @@
 
 namespace mbgl {
 
+using namespace style;
+
 void Painter::renderTileDebug(const RenderTile& renderTile) {
     if (frame.debugOptions == MapDebugOptions::NoDebug)
         return;
@@ -31,7 +33,8 @@ void Painter::renderTileDebug(const RenderTile& renderTile) {
             },
             vertexBuffer,
             indexBuffer,
-            segments
+            segments,
+            PaintProperties<>::Evaluated()
         );
     };
 

@@ -6,8 +6,8 @@
 #include <mbgl/shader/line.hpp>
 #include <mbgl/shader/line_pattern.hpp>
 #include <mbgl/shader/line_sdf.hpp>
-#include <mbgl/style/layers/line_layer_properties.hpp>
 #include <mbgl/util/geometry.hpp>
+#include <mbgl/style/layers/line_layer_properties.hpp>
 
 #include <cmath>
 
@@ -33,18 +33,39 @@ MBGL_DEFINE_UNIFORM_VECTOR(float, 2, u_patternscale_b);
 MBGL_DEFINE_UNIFORM_MATRIX(double, 2, u_antialiasingmatrix);
 } // namespace uniforms
 
-struct LineAttributes : gl::Attributes<
+struct LineLayoutAttributes : gl::Attributes<
     attributes::a_pos,
     attributes::a_data<4>>
+{};
+
+class LineProgram : public Program<
+    shaders::line,
+    gl::Triangle,
+    LineLayoutAttributes,
+    gl::Uniforms<
+        uniforms::u_matrix,
+        uniforms::u_antialiasingmatrix,
+        uniforms::u_ratio,
+        uniforms::u_extra>,
+    style::PaintProperties<
+        style::LineColor,
+        style::LineOpacity,
+        style::LineWidth,
+        style::LineGapWidth,
+        style::LineOffset,
+        style::LineBlur>>
 {
+public:
+    using Program::Program;
+
     /*
      * @param p vertex position
      * @param e extrude normal
      * @param t texture normal
      * @param dir direction of the line cap (-1/0/1)
      */
-    static Vertex vertex(Point<int16_t> p, Point<double> e, Point<bool> t, int8_t dir, int32_t linesofar = 0) {
-        return Vertex {
+    static LayoutVertex layoutVertex(Point<int16_t> p, Point<double> e, Point<bool> t, int8_t dir, int32_t linesofar = 0) {
+        return LayoutVertex {
             {
                 static_cast<int16_t>((p.x * 2) | t.x),
                 static_cast<int16_t>((p.y * 2) | t.y)
@@ -78,28 +99,6 @@ struct LineAttributes : gl::Attributes<
      * the acute/bevelled line join.
      */
     static const int8_t extrudeScale = 63;
-};
-
-using LineVertex = LineAttributes::Vertex;
-
-class LineProgram : public Program<
-    shaders::line,
-    gl::Triangle,
-    LineAttributes,
-    gl::Uniforms<
-        uniforms::u_matrix,
-        uniforms::u_opacity,
-        uniforms::u_width,
-        uniforms::u_gapwidth,
-        uniforms::u_blur,
-        uniforms::u_offset,
-        uniforms::u_antialiasingmatrix,
-        uniforms::u_ratio,
-        uniforms::u_extra,
-        uniforms::u_color>>
-{
-public:
-    using Program::Program;
 
     static UniformValues uniformValues(const style::LinePaintProperties::Evaluated&,
                                        const RenderTile&,
@@ -109,14 +108,9 @@ public:
 class LinePatternProgram : public Program<
     shaders::line_pattern,
     gl::Triangle,
-    LineAttributes,
+    LineLayoutAttributes,
     gl::Uniforms<
         uniforms::u_matrix,
-        uniforms::u_opacity,
-        uniforms::u_width,
-        uniforms::u_gapwidth,
-        uniforms::u_blur,
-        uniforms::u_offset,
         uniforms::u_antialiasingmatrix,
         uniforms::u_ratio,
         uniforms::u_extra,
@@ -127,7 +121,14 @@ class LinePatternProgram : public Program<
         uniforms::u_pattern_size_a,
         uniforms::u_pattern_size_b,
         uniforms::u_fade,
-        uniforms::u_image>>
+        uniforms::u_image>,
+    style::PaintProperties<
+        style::LineColor,
+        style::LineOpacity,
+        style::LineWidth,
+        style::LineGapWidth,
+        style::LineOffset,
+        style::LineBlur>>
 {
 public:
     using Program::Program;
@@ -142,25 +143,26 @@ public:
 class LineSDFProgram : public Program<
     shaders::line_sdf,
     gl::Triangle,
-    LineAttributes,
+    LineLayoutAttributes,
     gl::Uniforms<
         uniforms::u_matrix,
-        uniforms::u_opacity,
-        uniforms::u_width,
-        uniforms::u_gapwidth,
-        uniforms::u_blur,
-        uniforms::u_offset,
         uniforms::u_antialiasingmatrix,
         uniforms::u_ratio,
         uniforms::u_extra,
-        uniforms::u_color,
         uniforms::u_patternscale_a,
         uniforms::u_patternscale_b,
         uniforms::u_tex_y_a,
         uniforms::u_tex_y_b,
         uniforms::u_mix,
         uniforms::u_sdfgamma,
-        uniforms::u_image>>
+        uniforms::u_image>,
+    style::PaintProperties<
+        style::LineColor,
+        style::LineOpacity,
+        style::LineWidth,
+        style::LineGapWidth,
+        style::LineOffset,
+        style::LineBlur>>
 {
 public:
     using Program::Program;
@@ -174,5 +176,8 @@ public:
                                        float dashLineWidth,
                                        float atlasWidth);
 };
+
+using LineLayoutVertex = LineProgram::LayoutVertex;
+using LineAttributes = LineProgram::Attributes;
 
 } // namespace mbgl

@@ -26,11 +26,11 @@ public:
 
     style::LineLayoutProperties::Evaluated layout;
 
-    gl::VertexVector<LineVertex> vertices;
+    gl::VertexVector<LineLayoutVertex> vertices;
     gl::IndexVector<gl::Triangles> triangles;
     gl::SegmentVector<LineAttributes> segments;
 
-    optional<gl::VertexBuffer<LineVertex>> vertexBuffer;
+    optional<gl::VertexBuffer<LineLayoutVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Triangles>> indexBuffer;
 
 private:

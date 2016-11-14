@@ -19,13 +19,13 @@ public:
 
     void addGeometry(const GeometryCollection&);
 
-    gl::VertexVector<FillVertex> vertices;
+    gl::VertexVector<FillLayoutVertex> vertices;
     gl::IndexVector<gl::Lines> lines;
     gl::IndexVector<gl::Triangles> triangles;
     gl::SegmentVector<FillAttributes> lineSegments;
     gl::SegmentVector<FillAttributes> triangleSegments;
 
-    optional<gl::VertexBuffer<FillVertex>> vertexBuffer;
+    optional<gl::VertexBuffer<FillLayoutVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Lines>> lineIndexBuffer;
     optional<gl::IndexBuffer<gl::Triangles>> triangleIndexBuffer;
 };

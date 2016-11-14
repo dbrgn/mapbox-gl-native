@@ -51,7 +51,6 @@ void Painter::renderFill(PaintParameters& parameters,
                     tile.translatedMatrix(properties.get<FillTranslate>(),
                                           properties.get<FillTranslateAnchor>(),
                                           state),
-                    properties.get<FillOpacity>(),
                     context.viewport.getCurrentValue().size,
                     *imagePosA,
                     *imagePosB,
@@ -61,7 +60,8 @@ void Painter::renderFill(PaintParameters& parameters,
                 ),
                 vertexBuffer,
                 indexBuffer,
-                segments
+                segments,
+                properties
             );
         };
 
@@ -85,11 +85,11 @@ void Painter::renderFill(PaintParameters& parameters,
     } else {
         auto draw = [&] (uint8_t sublayer,
                          auto& program,
-                         Color outlineColor,
                          const auto& drawMode,
                          const auto& vertexBuffer,
                          const auto& indexBuffer,
-                         const auto& segments) {
+                         const auto& segments,
+                         const FillPaintProperties::Evaluated& properties_) {
             program.draw(
                 context,
                 drawMode,
@@ -97,28 +97,26 @@ void Painter::renderFill(PaintParameters& parameters,
                 stencilModeForClipping(tile.clip),
                 colorModeForRenderPass(),
                 FillProgram::UniformValues {
-                    uniforms::u_matrix::Value{ tile.translatedMatrix(properties.get<FillTranslate>(),
-                                               properties.get<FillTranslateAnchor>(),
+                    uniforms::u_matrix::Value{ tile.translatedMatrix(properties_.get<FillTranslate>(),
+                                               properties_.get<FillTranslateAnchor>(),
                                                state) },
-                    uniforms::u_opacity::Value{ properties.get<FillOpacity>() },
-                    uniforms::u_color::Value{ properties.get<FillColor>() },
-                    uniforms::u_outline_color::Value{ outlineColor },
                     uniforms::u_world::Value{ context.viewport.getCurrentValue().size },
                 },
                 vertexBuffer,
                 indexBuffer,
-                segments
+                segments,
+                properties_
             );
         };
 
         if (properties.get<FillAntialias>() && !layer.impl->paint.unevaluated.get<FillOutlineColor>().isUndefined() && pass == RenderPass::Translucent) {
             draw(2,
                  parameters.programs.fillOutline,
-                 properties.get<FillOutlineColor>(),
                  gl::Lines { 2.0f },
                  *bucket.vertexBuffer,
                  *bucket.lineIndexBuffer,
-                 bucket.lineSegments);
+                 bucket.lineSegments,
+                 properties);
         }
 
         // Only draw the fill when it's opaque and we're drawing opaque fragments,
@@ -126,21 +124,25 @@ void Painter::renderFill(PaintParameters& parameters,
         if ((properties.get<FillColor>().a >= 1.0f && properties.get<FillOpacity>() >= 1.0f) == (pass == RenderPass::Opaque)) {
             draw(1,
                  parameters.programs.fill,
-                 properties.get<FillOutlineColor>(),
                  gl::Triangles(),
                  *bucket.vertexBuffer,
                  *bucket.triangleIndexBuffer,
-                 bucket.triangleSegments);
+                 bucket.triangleSegments,
+                 properties);
         }
 
         if (properties.get<FillAntialias>() && layer.impl->paint.unevaluated.get<FillOutlineColor>().isUndefined() && pass == RenderPass::Translucent) {
+
+            FillPaintProperties::Evaluated properties_ = properties;
+            properties_.get<FillOutlineColor>() = properties_.get<FillColor>();
+
             draw(2,
                  parameters.programs.fillOutline,
-                 properties.get<FillColor>(),
                  gl::Lines { 2.0f },
                  *bucket.vertexBuffer,
                  *bucket.lineIndexBuffer,
-                 bucket.lineSegments);
+                 bucket.lineSegments,
+                 properties_);
         }
     }
 }

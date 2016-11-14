@@ -31,7 +31,7 @@ MBGL_DEFINE_UNIFORM_SCALAR(float, u_gamma);
 MBGL_DEFINE_UNIFORM_SCALAR(float, u_aspect_ratio);
 } // namespace uniforms
 
-struct SymbolAttributes : gl::Attributes<
+struct SymbolLayoutAttributes : gl::Attributes<
     attributes::a_pos,
     attributes::a_offset,
     attributes::a_texture_pos,
@@ -68,12 +68,10 @@ struct SymbolAttributes : gl::Attributes<
     }
 };
 
-using SymbolVertex = SymbolAttributes::Vertex;
-
 class SymbolIconProgram : public Program<
     shaders::symbol_icon,
     gl::Triangle,
-    SymbolAttributes,
+    SymbolLayoutAttributes,
     gl::Uniforms<
         uniforms::u_matrix,
         uniforms::u_opacity,
@@ -97,7 +95,7 @@ public:
 class SymbolSDFProgram : public Program<
     shaders::symbol_sdf,
     gl::Triangle,
-    SymbolAttributes,
+    SymbolLayoutAttributes,
     gl::Uniforms<
         uniforms::u_matrix,
         uniforms::u_opacity,
@@ -132,5 +130,8 @@ public:
                                                  const TransformState&,
                                                  float pixelRatio);
 };
+
+using SymbolLayoutVertex = SymbolLayoutAttributes::Vertex;
+using SymbolAttributes = SymbolIconProgram::Attributes;
 
 } // namespace mbgl

@@ -5,6 +5,7 @@
 #include <mbgl/style/types.hpp>
 #include <mbgl/style/layout_property.hpp>
 #include <mbgl/style/paint_property.hpp>
+#include <mbgl/programs/attributes.hpp>
 
 namespace mbgl {
 namespace style {
@@ -27,10 +28,12 @@ struct LineRoundLimit : LayoutProperty<float> {
 
 struct LineOpacity : PaintProperty<float> {
     static float defaultValue() { return 1; }
+    using Attribute = attributes::a_opacity;
 };
 
 struct LineColor : PaintProperty<Color> {
     static Color defaultValue() { return Color::black(); }
+    using Attribute = attributes::a_color;
 };
 
 struct LineTranslate : PaintProperty<std::array<float, 2>> {
@@ -43,18 +46,22 @@ struct LineTranslateAnchor : PaintProperty<TranslateAnchorType> {
 
 struct LineWidth : PaintProperty<float> {
     static float defaultValue() { return 1; }
+    using Attribute = attributes::a_width;
 };
 
 struct LineGapWidth : PaintProperty<float> {
     static float defaultValue() { return 0; }
+    using Attribute = attributes::a_gapwidth;
 };
 
 struct LineOffset : PaintProperty<float> {
     static float defaultValue() { return 0; }
+    using Attribute = attributes::a_lineoffset;
 };
 
 struct LineBlur : PaintProperty<float> {
     static float defaultValue() { return 0; }
+    using Attribute = attributes::a_blur;
 };
 
 struct LineDasharray : CrossFadedPaintProperty<std::vector<float>> {

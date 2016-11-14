@@ -34,20 +34,20 @@ public:
     const bool iconsNeedLinear;
 
     struct TextBuffer {
-        gl::VertexVector<SymbolVertex> vertices;
+        gl::VertexVector<SymbolLayoutVertex> vertices;
         gl::IndexVector<gl::Triangles> triangles;
         gl::SegmentVector<SymbolAttributes> segments;
 
-        optional<gl::VertexBuffer<SymbolVertex>> vertexBuffer;
+        optional<gl::VertexBuffer<SymbolLayoutVertex>> vertexBuffer;
         optional<gl::IndexBuffer<gl::Triangles>> indexBuffer;
     } text;
 
     struct IconBuffer {
-        gl::VertexVector<SymbolVertex> vertices;
+        gl::VertexVector<SymbolLayoutVertex> vertices;
         gl::IndexVector<gl::Triangles> triangles;
         gl::SegmentVector<SymbolAttributes> segments;
 
-        optional<gl::VertexBuffer<SymbolVertex>> vertexBuffer;
+        optional<gl::VertexBuffer<SymbolLayoutVertex>> vertexBuffer;
         optional<gl::IndexBuffer<gl::Triangles>> indexBuffer;
     } icon;
 

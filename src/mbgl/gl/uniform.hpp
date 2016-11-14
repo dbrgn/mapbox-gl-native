@@ -70,10 +70,8 @@ public:
         return State { { uniformLocation(id, Us::name) }... };
     }
 
-    static std::function<void ()> binder(State& state, Values&& values_) {
-        return [&state, values = std::move(values_)] () mutable {
-            util::ignore({ (state.template get<Us>() = values.template get<Us>(), 0)... });
-        };
+    static void bind(State& state, Values&& values) {
+        util::ignore({ (state.template get<Us>() = values.template get<Us>(), 0)... });
     }
 };
 

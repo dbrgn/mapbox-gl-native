@@ -20,11 +20,11 @@ public:
     bool hasData() const override;
     void addGeometry(const GeometryCollection&);
 
-    gl::VertexVector<CircleVertex> vertices;
+    gl::VertexVector<CircleLayoutVertex> vertices;
     gl::IndexVector<gl::Triangles> triangles;
     gl::SegmentVector<CircleAttributes> segments;
 
-    optional<gl::VertexBuffer<CircleVertex>> vertexBuffer;
+    optional<gl::VertexBuffer<CircleLayoutVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Triangles>> indexBuffer;
 
     const MapMode mode;
