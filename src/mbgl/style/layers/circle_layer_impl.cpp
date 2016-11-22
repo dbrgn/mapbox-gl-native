@@ -36,7 +36,7 @@ std::unique_ptr<Bucket> CircleLayer::Impl::createBucket(BucketParameters& parame
 
 float CircleLayer::Impl::getQueryRadius() const {
     const std::array<float, 2>& translate = paint.evaluated.get<CircleTranslate>();
-    return paint.evaluated.get<CircleRadius>() + util::length(translate[0], translate[1]);
+    return CircleRadius::defaultValue() + util::length(translate[0], translate[1]);
 }
 
 bool CircleLayer::Impl::queryIntersectsGeometry(
@@ -48,7 +48,7 @@ bool CircleLayer::Impl::queryIntersectsGeometry(
     auto translatedQueryGeometry = FeatureIndex::translateQueryGeometry(
             queryGeometry, paint.evaluated.get<CircleTranslate>(), paint.evaluated.get<CircleTranslateAnchor>(), bearing, pixelsToTileUnits);
 
-    auto circleRadius = paint.evaluated.get<CircleRadius>() * pixelsToTileUnits;
+    auto circleRadius = CircleRadius::defaultValue() * pixelsToTileUnits;
 
     return util::polygonIntersectsBufferedMultiPoint(
             translatedQueryGeometry.value_or(queryGeometry), geometry, circleRadius);

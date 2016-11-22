@@ -16,7 +16,7 @@ bool LineLayer::Impl::evaluate(const PropertyEvaluationParameters& parameters) {
     // for scaling dasharrays
     PropertyEvaluationParameters dashArrayParams = parameters;
     dashArrayParams.z = std::floor(dashArrayParams.z);
-    dashLineWidth = paint.evaluate<LineWidth>(dashArrayParams);
+    dashLineWidth = paint.evaluate<LineWidth>(dashArrayParams).value_or(LineWidth::defaultValue());
 
     paint.evaluate(parameters);
 
@@ -42,10 +42,14 @@ std::unique_ptr<Bucket> LineLayer::Impl::createBucket(BucketParameters& paramete
 }
 
 float LineLayer::Impl::getLineWidth() const {
-    if (paint.evaluated.get<LineGapWidth>() > 0) {
-        return paint.evaluated.get<LineGapWidth>() + 2 * paint.evaluated.get<LineWidth>();
+    auto lineWidth = paint.evaluated.get<LineWidth>();
+    auto gapWidth = paint.evaluated.get<LineGapWidth>();
+    if (gapWidth && lineWidth && *gapWidth > 0) {
+        return *gapWidth + 2 * *lineWidth;
+    } else if (lineWidth) {
+        return *lineWidth;
     } else {
-        return paint.evaluated.get<LineWidth>();
+        return LineWidth::defaultValue();
     }
 }
 
@@ -81,7 +85,8 @@ optional<GeometryCollection> offsetLine(const GeometryCollection& rings, const d
 
 float LineLayer::Impl::getQueryRadius() const {
     const std::array<float, 2>& translate = paint.evaluated.get<LineTranslate>();
-    return getLineWidth() / 2.0 + std::abs(paint.evaluated.get<LineOffset>()) + util::length(translate[0], translate[1]);
+    auto offset = paint.evaluated.get<LineOffset>().value_or(LineOffset::defaultValue());
+    return getLineWidth() / 2.0 + std::abs(offset) + util::length(translate[0], translate[1]);
 }
 
 bool LineLayer::Impl::queryIntersectsGeometry(
@@ -94,7 +99,9 @@ bool LineLayer::Impl::queryIntersectsGeometry(
 
     auto translatedQueryGeometry = FeatureIndex::translateQueryGeometry(
             queryGeometry, paint.evaluated.get<LineTranslate>(), paint.evaluated.get<LineTranslateAnchor>(), bearing, pixelsToTileUnits);
-    auto offsetGeometry = offsetLine(geometry, paint.evaluated.get<LineOffset>() * pixelsToTileUnits);
+
+    auto offset = paint.evaluated.get<LineOffset>().value_or(LineOffset::defaultValue());
+    auto offsetGeometry = offsetLine(geometry, offset * pixelsToTileUnits);
 
     return util::polygonIntersectsBufferedMultiLine(
             translatedQueryGeometry.value_or(queryGeometry),
