@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mbgl/gl/program.hpp>
+#include <mbgl/programs/paint_attribute_data.hpp>
 #include <mbgl/programs/program_parameters.hpp>
 #include <mbgl/programs/attributes.hpp>
 #include <mbgl/style/paint_property.hpp>
@@ -9,64 +10,20 @@
 
 namespace mbgl {
 
-template <class S, class P, class L, class U, class Ps = style::PaintProperties<>>
-class Program;
-
 template <class Shaders,
           class Primitive,
           class LayoutAttrs,
           class Uniforms,
-          class... Ps>
-class Program<Shaders, Primitive, LayoutAttrs, Uniforms, style::PaintProperties<Ps...>> {
+          class PaintProperties>
+class Program {
 public:
     using LayoutAttributes = LayoutAttrs;
     using LayoutVertex = typename LayoutAttributes::Vertex;
 
-    using PaintProperties = style::PaintProperties<Ps...>;
-    using PaintAttributes = gl::Attributes<typename Ps::Attribute...>;
-    using PaintAttributeValues = typename PaintAttributes::Values;
-
-    class PaintData {
-    public:
-        using VertexVectors = typename PaintProperties::template Tuple<
-            TypeList<optional<typename Ps::VertexVector>...>>;
-        using VertexBuffers = typename PaintProperties::template Tuple<
-            TypeList<optional<typename Ps::VertexBuffer>...>>;
-        using AttributeValues = typename PaintProperties::template Tuple<
-            TypeList<typename Ps::AttributeValue...>>;
-
-        template <class Properties>
-        PaintData(const Properties& properties)
-            : vertexVectors(Ps::vertexVector(properties.template get<Ps>())...)
-        {
-            util::ignore({
-                (Ps::setAttributeValueIfConstant(attributeValues_.template get<Ps>(),
-                                                 properties.template get<Ps>()), 0)...
-            });
-        }
-
-        void upload(gl::Context& context) {
-            vertexBuffers = VertexBuffers {
-                Ps::vertexBuffer(context, std::move(vertexVectors.template get<Ps>()))...
-            };
-
-            util::ignore({
-                (Ps::setAttributeValueIfVariable(attributeValues_.template get<Ps>(),
-                                                 vertexBuffers.template get<Ps>()), 0)...
-            });
-        }
-
-        PaintAttributeValues attributeValues() {
-            return PaintAttributeValues {
-                attributeValues_.template get<Ps>()...
-            };
-        }
-
-    private:
-        VertexVectors vertexVectors;
-        VertexBuffers vertexBuffers;
-        AttributeValues attributeValues_;
-    };
+    using PaintAttributeData = PaintAttributeData<typename PaintProperties::Properties,
+                                                  typename PaintProperties::DataDrivenProperties>;
+    using PaintAttributeValues = typename PaintAttributeData::Attributes::Values;
+    using PaintAttributes = typename PaintAttributeData::Attributes;
 
     using Attributes = gl::ConcatenateAttributes<LayoutAttributes, PaintAttributes>;
     using ProgramType = gl::Program<Primitive, Attributes, Uniforms>;

@@ -5,6 +5,7 @@
 #include <mbgl/programs/uniforms.hpp>
 #include <mbgl/shader/raster.hpp>
 #include <mbgl/util/geometry.hpp>
+#include <mbgl/style/layers/raster_layer_properties.hpp>
 
 namespace mbgl {
 
@@ -42,7 +43,8 @@ class RasterProgram : public Program<
         uniforms::u_spin_weights,
         uniforms::u_buffer_scale,
         uniforms::u_scale_parent,
-        uniforms::u_tl_parent>>
+        uniforms::u_tl_parent>,
+    style::RasterPaintProperties>
 {
 public:
     using Program::Program;

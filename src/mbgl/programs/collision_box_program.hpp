@@ -28,7 +28,8 @@ class CollisionBoxProgram : public Program<
         uniforms::u_matrix,
         uniforms::u_scale,
         uniforms::u_zoom,
-        uniforms::u_maxzoom>>
+        uniforms::u_maxzoom>,
+    style::PaintProperties<>>
 {
 public:
     using Program::Program;

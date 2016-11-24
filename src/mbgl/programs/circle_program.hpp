@@ -22,11 +22,7 @@ class CircleProgram : public Program<
         uniforms::u_matrix,
         uniforms::u_scale_with_map,
         uniforms::u_extrude_scale>,
-    style::PaintProperties<
-        style::CircleColor,
-        style::CircleOpacity,
-        style::CircleRadius,
-        style::CircleBlur>>
+    style::CirclePaintProperties>
 {
 public:
     using Program::Program;

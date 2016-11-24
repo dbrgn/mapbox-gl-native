@@ -14,7 +14,8 @@ class DebugProgram : public Program<
         attributes::a_pos>,
     gl::Uniforms<
         uniforms::u_matrix,
-        uniforms::u_color>>
+        uniforms::u_color>,
+    style::PaintProperties<>>
 {
 public:
     using Program::Program;

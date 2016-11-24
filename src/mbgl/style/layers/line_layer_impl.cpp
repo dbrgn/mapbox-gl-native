@@ -30,14 +30,14 @@ bool LineLayer::Impl::evaluate(const PropertyEvaluationParameters& parameters) {
 }
 
 std::unique_ptr<Bucket> LineLayer::Impl::createBucket(BucketParameters& parameters) const {
-    auto bucket = std::make_unique<LineBucket>(paint.evaluated, parameters.tileID.overscaleFactor());
+    auto bucket = std::make_unique<LineBucket>(paint.evaluated, parameters.tileID.overscaledZ, parameters.tileID.overscaleFactor());
 
     bucket->layout = layout.evaluate(PropertyEvaluationParameters(parameters.tileID.overscaledZ));
 
     auto& name = bucketName();
     parameters.eachFilteredFeature(filter, [&] (const auto& feature, std::size_t index, const std::string& layerName) {
         auto geometries = feature.getGeometries();
-        bucket->addGeometry(geometries);
+        bucket->addFeature(feature, geometries);
         parameters.featureIndex.insert(geometries, index, layerName, name);
     });
 

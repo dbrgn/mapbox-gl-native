@@ -26,11 +26,12 @@ using namespace style;
 
 struct GeometryTooLongException : std::exception {};
 
-FillBucket::FillBucket(FillPaintProperties::Evaluated propertyValues)
-    : paintData(propertyValues) {
+FillBucket::FillBucket(FillPaintProperties::Evaluated properties, float z)
+    : paintData(std::move(properties), z) {
 }
 
-void FillBucket::addGeometry(const GeometryCollection& geometry) {
+void FillBucket::addFeature(const GeometryTileFeature& feature,
+                            const GeometryCollection& geometry) {
     for (auto& polygon : classifyRings(geometry)) {
         // Optimize polygons with many interior rings for earcut tesselation.
         limitHoles(polygon, 500);
@@ -93,6 +94,8 @@ void FillBucket::addGeometry(const GeometryCollection& geometry) {
         triangleSegment.vertexLength += totalVertices;
         triangleSegment.indexLength += nIndicies;
     }
+
+    paintData.populateVertexVectors(feature, vertices.vertexSize());
 }
 
 void FillBucket::upload(gl::Context& context) {

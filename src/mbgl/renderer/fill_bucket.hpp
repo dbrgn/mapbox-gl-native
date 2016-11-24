@@ -14,13 +14,14 @@ namespace mbgl {
 
 class FillBucket : public Bucket {
 public:
-    FillBucket(style::FillPaintProperties::Evaluated);
+    FillBucket(style::FillPaintProperties::Evaluated, float z);
 
     void upload(gl::Context&) override;
     void render(Painter&, PaintParameters&, const style::Layer&, const RenderTile&) override;
     bool hasData() const override;
 
-    void addGeometry(const GeometryCollection&);
+    void addFeature(const GeometryTileFeature&,
+                    const GeometryCollection&);
 
     gl::VertexVector<FillLayoutVertex> vertices;
     gl::IndexVector<gl::Lines> lines;
@@ -32,7 +33,7 @@ public:
     optional<gl::IndexBuffer<gl::Lines>> lineIndexBuffer;
     optional<gl::IndexBuffer<gl::Triangles>> triangleIndexBuffer;
 
-    FillProgram::PaintData paintData;
+    FillProgram::PaintAttributeData paintData;
 };
 
 } // namespace mbgl

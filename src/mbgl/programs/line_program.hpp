@@ -47,13 +47,7 @@ class LineProgram : public Program<
         uniforms::u_antialiasingmatrix,
         uniforms::u_ratio,
         uniforms::u_extra>,
-    style::PaintProperties<
-        style::LineColor,
-        style::LineOpacity,
-        style::LineWidth,
-        style::LineGapWidth,
-        style::LineOffset,
-        style::LineBlur>>
+    style::LinePaintProperties>
 {
 public:
     using Program::Program;
@@ -122,13 +116,7 @@ class LinePatternProgram : public Program<
         uniforms::u_pattern_size_b,
         uniforms::u_fade,
         uniforms::u_image>,
-    style::PaintProperties<
-        style::LineColor,
-        style::LineOpacity,
-        style::LineWidth,
-        style::LineGapWidth,
-        style::LineOffset,
-        style::LineBlur>>
+    style::LinePaintProperties>
 {
 public:
     using Program::Program;
@@ -156,13 +144,7 @@ class LineSDFProgram : public Program<
         uniforms::u_mix,
         uniforms::u_sdfgamma,
         uniforms::u_image>,
-    style::PaintProperties<
-        style::LineColor,
-        style::LineOpacity,
-        style::LineWidth,
-        style::LineGapWidth,
-        style::LineOffset,
-        style::LineBlur>>
+    style::LinePaintProperties>
 {
 public:
     using Program::Program;

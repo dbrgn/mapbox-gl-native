@@ -73,10 +73,7 @@ class FillProgram : public Program<
     gl::Triangle,
     FillLayoutAttributes,
     FillUniforms,
-    style::PaintProperties<
-        style::FillColor,
-        style::FillOutlineColor,
-        style::FillOpacity>>
+    style::FillPaintProperties>
 {
 public:
     using Program::Program;
@@ -96,10 +93,7 @@ class FillPatternProgram : public Program<
     gl::Triangle,
     FillLayoutAttributes,
     FillPatternUniforms,
-    style::PaintProperties<
-        style::FillColor,
-        style::FillOutlineColor,
-        style::FillOpacity>>
+    style::FillPaintProperties>
 {
 public:
     using Program::Program;
@@ -110,10 +104,7 @@ class FillOutlineProgram : public Program<
     gl::Line,
     FillLayoutAttributes,
     FillUniforms,
-    style::PaintProperties<
-        style::FillColor,
-        style::FillOutlineColor,
-        style::FillOpacity>>
+    style::FillPaintProperties>
 {
 public:
     using Program::Program;
@@ -124,10 +115,7 @@ class FillOutlinePatternProgram : public Program<
     gl::Line,
     FillLayoutAttributes,
     FillPatternUniforms,
-    style::PaintProperties<
-        style::FillColor,
-        style::FillOutlineColor,
-        style::FillOpacity>>
+    style::FillPaintProperties>
 {
 public:
     using Program::Program;

@@ -15,6 +15,9 @@
 #include <utility>
 
 namespace mbgl {
+
+class GeometryTileFeature;
+
 namespace style {
 
 template <class Value>
@@ -129,6 +132,7 @@ public:
     using UnevaluatedType = UnevaluatedPaintProperty<ValueType>;
     using EvaluatorType = PropertyEvaluator<T>;
     using EvaluatedType = T;
+    static constexpr bool IsDataDriven = false;
 };
 
 template <class T, class A>
@@ -139,6 +143,7 @@ public:
     using UnevaluatedType = UnevaluatedPaintProperty<ValueType>;
     using EvaluatorType = DataDrivenPropertyEvaluator<T>;
     using EvaluatedType = PossiblyEvaluatedProperty<T>;
+    static constexpr bool IsDataDriven = true;
 
     using Attribute = A;
     using AttributeValue = typename Attribute::Value;
@@ -152,6 +157,20 @@ public:
             return VertexVector();
         } else {
             return {};
+        }
+    }
+
+    static void populateVertexVector(optional<VertexVector>& vector,
+                                     const EvaluatedType& propertyValue,
+                                     const GeometryTileFeature& feature,
+                                     float z,
+                                     std::size_t length) {
+        assert(propertyValue.template is<T>() != bool(vector));
+        if (vector) {
+            T value = propertyValue.evaluate(z, feature);
+            for (std::size_t i = (*vector).vertexSize(); i < length; ++i) {
+                (*vector).emplace_back(value);
+            }
         }
     }
 
@@ -188,14 +207,19 @@ public:
     using UnevaluatedType = UnevaluatedPaintProperty<ValueType>;
     using EvaluatorType = CrossFadedPropertyEvaluator<T>;
     using EvaluatedType = Faded<T>;
+    static constexpr bool IsDataDriven = false;
 };
+
+template <class P>
+struct IsDataDriven : std::integral_constant<bool, P::IsDataDriven> {};
 
 template <class... Ps>
 class PaintProperties {
 public:
     using Properties = TypeList<Ps...>;
+    using DataDrivenProperties = FilteredTypeList<Properties, IsDataDriven>;
+
     using EvaluatedTypes = TypeList<typename Ps::EvaluatedType...>;
-    using ValueTypes = TypeList<typename Ps::ValueType...>;
     using UnevaluatedTypes = TypeList<typename Ps::UnevaluatedType...>;
     using CascadingTypes = TypeList<typename Ps::CascadingType...>;
 

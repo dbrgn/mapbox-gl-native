@@ -10,15 +10,18 @@ namespace mbgl {
 
 using namespace style;
 
-LineBucket::LineBucket(style::LinePaintProperties::Evaluated propertyValues, uint32_t overscaling_)
-    : paintData(propertyValues),
+LineBucket::LineBucket(LinePaintProperties::Evaluated properties, float z, uint32_t overscaling_)
+    : paintData(std::move(properties), z),
       overscaling(overscaling_) {
 }
 
-void LineBucket::addGeometry(const GeometryCollection& geometryCollection) {
+void LineBucket::addFeature(const GeometryTileFeature& feature,
+                            const GeometryCollection& geometryCollection) {
     for (auto& line : geometryCollection) {
         addGeometry(line);
     }
+
+    paintData.populateVertexVectors(feature, vertices.vertexSize());
 }
 
 /*

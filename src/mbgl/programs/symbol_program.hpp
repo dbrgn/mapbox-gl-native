@@ -7,6 +7,7 @@
 #include <mbgl/shader/symbol_sdf.hpp>
 #include <mbgl/util/geometry.hpp>
 #include <mbgl/util/size.hpp>
+#include <mbgl/style/layers/symbol_layer_properties.hpp>
 
 #include <cmath>
 #include <array>
@@ -80,7 +81,8 @@ class SymbolIconProgram : public Program<
         uniforms::u_zoom,
         uniforms::u_rotate_with_map,
         uniforms::u_texture,
-        uniforms::u_fadetexture>>
+        uniforms::u_fadetexture>,
+    style::SymbolPaintProperties>
 {
 public:
     using Program::Program;
@@ -111,7 +113,8 @@ class SymbolSDFProgram : public Program<
         uniforms::u_pitch,
         uniforms::u_bearing,
         uniforms::u_aspect_ratio,
-        uniforms::u_pitch_with_map>>
+        uniforms::u_pitch_with_map>,
+    style::SymbolPaintProperties>
 {
 public:
     using Program::Program;

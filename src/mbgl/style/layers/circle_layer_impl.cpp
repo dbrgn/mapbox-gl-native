@@ -24,12 +24,12 @@ bool CircleLayer::Impl::evaluate(const PropertyEvaluationParameters& parameters)
 }
 
 std::unique_ptr<Bucket> CircleLayer::Impl::createBucket(BucketParameters& parameters) const {
-    auto bucket = std::make_unique<CircleBucket>(paint.evaluated, parameters.mode);
+    auto bucket = std::make_unique<CircleBucket>(paint.evaluated, parameters.tileID.overscaledZ, parameters.mode);
 
     auto& name = bucketName();
     parameters.eachFilteredFeature(filter, [&] (const auto& feature, std::size_t index, const std::string& layerName) {
         auto geometries = feature.getGeometries();
-        bucket->addGeometry(geometries);
+        bucket->addFeature(feature, geometries);
         parameters.featureIndex.insert(geometries, index, layerName, name);
     });
 

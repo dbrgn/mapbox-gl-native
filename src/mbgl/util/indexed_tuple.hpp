@@ -1,5 +1,7 @@
 #pragma once
 
+#include <mbgl/util/type_list.hpp>
+
 #include <type_traits>
 #include <tuple>
 
@@ -13,8 +15,6 @@ struct TypeIndex<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
 
 template <class T, class U, class... Ts>
 struct TypeIndex<T, U, Ts...> : std::integral_constant<std::size_t, 1 + TypeIndex<T, Ts...>::value> {};
-
-template <class...> class TypeList {};
 
 template <class...> class IndexedTuple;
 

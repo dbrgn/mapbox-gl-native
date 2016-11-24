@@ -13,13 +13,14 @@ namespace mbgl {
 
 class CircleBucket : public Bucket {
 public:
-    CircleBucket(style::CirclePaintProperties::Evaluated, MapMode);
+    CircleBucket(style::CirclePaintProperties::Evaluated, float z, MapMode);
 
     void upload(gl::Context&) override;
     void render(Painter&, PaintParameters&, const style::Layer&, const RenderTile&) override;
 
     bool hasData() const override;
-    void addGeometry(const GeometryCollection&);
+    void addFeature(const GeometryTileFeature&,
+                    const GeometryCollection&);
 
     gl::VertexVector<CircleLayoutVertex> vertices;
     gl::IndexVector<gl::Triangles> triangles;
@@ -28,7 +29,7 @@ public:
     optional<gl::VertexBuffer<CircleLayoutVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Triangles>> indexBuffer;
 
-    CircleProgram::PaintData paintData;
+    CircleProgram::PaintAttributeData paintData;
 
     const MapMode mode;
 };

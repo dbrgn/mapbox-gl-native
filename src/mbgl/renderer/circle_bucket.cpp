@@ -10,8 +10,8 @@ namespace mbgl {
 
 using namespace style;
 
-CircleBucket::CircleBucket(CirclePaintProperties::Evaluated propertyValues, MapMode mode_)
-    : paintData(propertyValues),
+CircleBucket::CircleBucket(CirclePaintProperties::Evaluated properties, float z, MapMode mode_)
+    : paintData(std::move(properties), z),
       mode(mode_) {
 }
 
@@ -33,10 +33,11 @@ bool CircleBucket::hasData() const {
     return !segments.empty();
 }
 
-void CircleBucket::addGeometry(const GeometryCollection& geometryCollection) {
+void CircleBucket::addFeature(const GeometryTileFeature& feature,
+                              const GeometryCollection& geometry) {
     constexpr const uint16_t vertexLength = 4;
 
-    for (auto& circle : geometryCollection) {
+    for (auto& circle : geometry) {
         for(auto& point : circle) {
             auto x = point.x;
             auto y = point.y;
@@ -79,6 +80,8 @@ void CircleBucket::addGeometry(const GeometryCollection& geometryCollection) {
             segment.indexLength += 6;
         }
     }
+
+    paintData.populateVertexVectors(feature, vertices.vertexSize());
 }
 
 } // namespace mbgl

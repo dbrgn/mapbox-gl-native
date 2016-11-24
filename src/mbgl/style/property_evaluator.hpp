@@ -5,6 +5,9 @@
 #include <mbgl/util/interpolate.hpp>
 
 namespace mbgl {
+
+class GeometryTileFeature;
+
 namespace style {
 
 class PropertyEvaluationParameters;
@@ -31,6 +34,8 @@ template <class T>
 class PossiblyEvaluatedProperty : public variant<T, PropertyFunction<T>> {
 public:
     using variant<T, PropertyFunction<T>>::variant;
+
+    T evaluate(float z, const GeometryTileFeature&) const;
 
     T evaluatedValueOr(const T& other) const {
         return this->template is<T>() ? this->template get<T>() : other;
