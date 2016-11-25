@@ -1,5 +1,6 @@
 package com.mapbox.mapboxsdk.maps;
 
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,6 +35,7 @@ import java.util.List;
 class AnnotationManager implements MapView.OnMapChangedListener {
 
     private NativeMapView nativeMapView;
+    private MapboxMap mapboxMap;
     private IconManager iconManager;
     private InfoWindowManager infoWindowManager;
     private MarkerViewManager markerViewManager;
@@ -43,13 +46,14 @@ class AnnotationManager implements MapView.OnMapChangedListener {
     private MapboxMap.OnMarkerClickListener onMarkerClickListener;
     private boolean isWaitingForRenderInvoke;
 
-    AnnotationManager(NativeMapView view, IconManager iconManager, InfoWindowManager manager) {
+    AnnotationManager(NativeMapView view, MapboxMap mapboxMap, IconManager iconManager, InfoWindowManager manager) {
         this.nativeMapView = view;
         this.iconManager = iconManager;
         this.infoWindowManager = manager;
         this.selectedMarkers = new ArrayList<>();
         this.annotations = new LongSparseArray<>();
-
+        this.mapboxMap = mapboxMap;
+        this.markerViewManager = new MarkerViewManager(mapboxMap, mapboxMap.getMapView());
         if (view != null) {
             // null checking needed for unit tests
             view.addOnMapChangedListener(this);
@@ -280,7 +284,7 @@ class AnnotationManager implements MapView.OnMapChangedListener {
         onMarkerClickListener = listener;
     }
 
-    void selectMarker(@NonNull Marker marker, @NonNull MapboxMap mapboxMap) {
+    void selectMarker(@NonNull Marker marker) {
         if (selectedMarkers.contains(marker)) {
             return;
         }
@@ -568,10 +572,7 @@ class AnnotationManager implements MapView.OnMapChangedListener {
     // MarkerViewManager
     //
 
-    MarkerViewManager getMarkerViewManager(MapboxMap mapboxMap) {
-        if (markerViewManager == null) {
-            this.markerViewManager = new MarkerViewManager(mapboxMap, mapboxMap.getMapView());
-        }
+    MarkerViewManager getMarkerViewManager() {
         return markerViewManager;
     }
 
@@ -605,5 +606,59 @@ class AnnotationManager implements MapView.OnMapChangedListener {
                 marker.setId(newId);
             }
         }
+    }
+
+    //
+    // Click event
+    //
+
+    boolean onTap(PointF tapPoint, float screenDensity) {
+        float toleranceSides = 4 * screenDensity;
+        float toleranceTopBottom = 10 * screenDensity;
+
+        RectF tapRect = new RectF(tapPoint.x - iconManager.getAverageIconWidth() / 2 - toleranceSides,
+                tapPoint.y - iconManager.getAverageIconHeight() / 2 - toleranceTopBottom,
+                tapPoint.x + iconManager.getAverageIconWidth() / 2 + toleranceSides,
+                tapPoint.y + iconManager.getAverageIconHeight() / 2 + toleranceTopBottom);
+
+        List<Marker> nearbyMarkers = getMarkersInRect(tapRect);
+        long newSelectedMarkerId = -1;
+
+        if (nearbyMarkers != null && nearbyMarkers.size() > 0) {
+            Collections.sort(nearbyMarkers);
+            for (Marker nearbyMarker : nearbyMarkers) {
+                boolean found = false;
+                for (Marker selectedMarker : selectedMarkers) {
+                    if (selectedMarker.equals(nearbyMarker)) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    newSelectedMarkerId = nearbyMarker.getId();
+                    break;
+                }
+            }
+        }
+
+        if (newSelectedMarkerId >= 0) {
+            List<Annotation> annotations = getAnnotations();
+            int count = annotations.size();
+            for (int i = 0; i < count; i++) {
+                Annotation annotation = annotations.get(i);
+                if (annotation instanceof Marker) {
+                    if (annotation.getId() == newSelectedMarkerId) {
+                        if (selectedMarkers.isEmpty() || !selectedMarkers.contains(annotation)) {
+                            if (!(annotation instanceof MarkerView)) {
+                                selectMarker((Marker) annotation);
+                            } else {
+                                markerViewManager.onClickMarkerView((MarkerView) annotation);
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

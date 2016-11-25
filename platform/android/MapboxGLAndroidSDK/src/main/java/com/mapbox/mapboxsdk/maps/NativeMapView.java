@@ -782,6 +782,14 @@ final class NativeMapView {
 
     private native void nativeSetAPIBaseURL(long nativeMapViewPtr, String baseUrl);
 
+    int getWidth(){
+        return mapView.getWidth();
+    }
+
+    int getHeight(){
+        return mapView.getHeight();
+    }
+
     //
     // MapChangeEvents
     //

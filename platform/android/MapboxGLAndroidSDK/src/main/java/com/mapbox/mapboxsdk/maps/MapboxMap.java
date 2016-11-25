@@ -10,7 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v4.util.Pools;
+
 import timber.log.Timber;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -64,12 +66,6 @@ public class MapboxMap {
     private Transform transform;
     private boolean myLocationEnabled;
 
-    private MapboxMap.OnMapClickListener onMapClickListener;
-    private MapboxMap.OnMapLongClickListener onMapLongClickListener;
-
-
-    private MapboxMap.OnFlingListener onFlingListener;
-    private MapboxMap.OnScrollListener onScrollListener;
     private MapboxMap.OnMyLocationTrackingModeChangeListener onMyLocationTrackingModeChangeListener;
     private MapboxMap.OnMyBearingTrackingModeChangeListener onMyBearingTrackingModeChangeListener;
     private MapboxMap.OnFpsChangedListener onFpsChangedListener;
@@ -84,16 +80,16 @@ public class MapboxMap {
         this.mapView = mapView;
         uiSettings = new UiSettings(mapView);
         trackingSettings = new TrackingSettings(this.mapView, uiSettings);
-        projection = new Projection(mapView);
-        infoWindowManager = new InfoWindowManager();
-        annotationManager = new AnnotationManager(mapView.getNativeMapView(), iconManager, infoWindowManager);
 
         // TODO inject NativeMapView https://github.com/mapbox/mapbox-gl-native/issues/4100
         NativeMapView nativeMapView = mapView.getNativeMapView();
         if (nativeMapView != null) {
-            transform = new Transform(nativeMapView, this);
+            transform = new Transform(nativeMapView, this, mapView.getMyLocationView());
+            projection = new Projection(nativeMapView, transform);
             nativeMapView.addOnMapChangedListener(new CameraInvalidator());
         }
+        infoWindowManager = new InfoWindowManager();
+        annotationManager = new AnnotationManager(mapView.getNativeMapView(), this, iconManager, infoWindowManager);
     }
 
     // Style
@@ -355,7 +351,7 @@ public class MapboxMap {
      */
     public MyLocationViewSettings getMyLocationViewSettings() {
         if (myLocationViewSettings == null) {
-            myLocationViewSettings = new MyLocationViewSettings(mapView, mapView.getUserLocationView());
+            myLocationViewSettings = new MyLocationViewSettings(projection, mapView.getMyLocationView(), trackingSettings);
         }
         return myLocationViewSettings;
     }
@@ -648,7 +644,7 @@ public class MapboxMap {
     void invalidateCameraPosition() {
         CameraPosition cameraPosition = transform.invalidateCameraPosition();
         if (cameraPosition != null) {
-            mapView.updateCameraPosition(cameraPosition);
+            transform.updateCameraPosition(cameraPosition);
         }
     }
 
@@ -821,10 +817,6 @@ public class MapboxMap {
     //
     // Annotations
     //
-
-    void setTilt(double tilt) {
-        mapView.setTilt(tilt);
-    }
 
     /**
      * <p>
@@ -1152,7 +1144,7 @@ public class MapboxMap {
             Timber.w("marker was null, so just returning");
             return;
         }
-        annotationManager.selectMarker(marker, this);
+        annotationManager.selectMarker(marker);
     }
 
     /**
@@ -1189,7 +1181,7 @@ public class MapboxMap {
      * @return the associated MarkerViewManager
      */
     public MarkerViewManager getMarkerViewManager() {
-        return annotationManager.getMarkerViewManager(this);
+        return annotationManager.getMarkerViewManager();
     }
 
     //
@@ -1279,7 +1271,7 @@ public class MapboxMap {
      * @param bottom The bottom margin in pixels.
      */
     public void setPadding(int left, int top, int right, int bottom) {
-        mapView.setContentPadding(left, top, right, bottom);
+        projection.setContentPadding(new int[]{left, top, right, bottom}, myLocationViewSettings.getPadding());
         uiSettings.invalidate();
     }
 
@@ -1326,6 +1318,10 @@ public class MapboxMap {
         return onFpsChangedListener;
     }
 
+    MapGestureDetector getGestureDetector() {
+        return mapView.getMapGestureDetector();
+    }
+
     /**
      * Sets a callback that's invoked when the map is scrolled.
      *
@@ -1334,12 +1330,7 @@ public class MapboxMap {
      */
     @UiThread
     public void setOnScrollListener(@Nullable OnScrollListener listener) {
-        onScrollListener = listener;
-    }
-
-    // used by MapView
-    OnScrollListener getOnScrollListener() {
-        return onScrollListener;
+        getGestureDetector().setOnScrollListener(listener);
     }
 
     /**
@@ -1350,12 +1341,7 @@ public class MapboxMap {
      */
     @UiThread
     public void setOnFlingListener(@Nullable OnFlingListener listener) {
-        onFlingListener = listener;
-    }
-
-    // used by MapView
-    OnFlingListener getOnFlingListener() {
-        return onFlingListener;
+        getGestureDetector().setOnFlingListener(listener);
     }
 
     /**
@@ -1366,12 +1352,7 @@ public class MapboxMap {
      */
     @UiThread
     public void setOnMapClickListener(@Nullable OnMapClickListener listener) {
-        onMapClickListener = listener;
-    }
-
-    // used  by MapView
-    OnMapClickListener getOnMapClickListener() {
-        return onMapClickListener;
+        getGestureDetector().setOnMapClickListener(listener);
     }
 
     /**
@@ -1382,12 +1363,7 @@ public class MapboxMap {
      */
     @UiThread
     public void setOnMapLongClickListener(@Nullable OnMapLongClickListener listener) {
-        onMapLongClickListener = listener;
-    }
-
-    // used by MapView
-    OnMapLongClickListener getOnMapLongClickListener() {
-        return onMapLongClickListener;
+        getGestureDetector().setOnMapLongClickListener(listener);
     }
 
     /**
