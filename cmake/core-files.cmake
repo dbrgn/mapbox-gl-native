@@ -140,6 +140,7 @@ set(MBGL_CORE_FILES
     src/mbgl/programs/fill_program.hpp
     src/mbgl/programs/line_program.cpp
     src/mbgl/programs/line_program.hpp
+    src/mbgl/programs/paint_attribute_data.hpp
     src/mbgl/programs/program.hpp
     src/mbgl/programs/program_parameters.hpp
     src/mbgl/programs/programs.hpp
@@ -231,6 +232,7 @@ set(MBGL_CORE_FILES
     src/mbgl/style/property_evaluation_parameters.hpp
     src/mbgl/style/property_evaluator.cpp
     src/mbgl/style/property_evaluator.hpp
+    src/mbgl/style/property_function.cpp
     src/mbgl/style/property_parsing.cpp
     src/mbgl/style/property_parsing.hpp
     src/mbgl/style/query_parameters.hpp
@@ -465,6 +467,7 @@ set(MBGL_CORE_FILES
     src/mbgl/util/tile_cover.cpp
     src/mbgl/util/tile_cover.hpp
     src/mbgl/util/token.hpp
+    src/mbgl/util/type_list.hpp
     src/mbgl/util/url.cpp
     src/mbgl/util/url.hpp
     src/mbgl/util/utf.hpp

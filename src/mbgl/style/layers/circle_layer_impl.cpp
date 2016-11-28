@@ -15,9 +15,9 @@ void CircleLayer::Impl::cascade(const CascadeParameters& parameters) {
 bool CircleLayer::Impl::evaluate(const PropertyEvaluationParameters& parameters) {
     paint.evaluate(parameters);
 
-    passes = (paint.evaluated.get<CircleRadius>().evaluatedValueOr(1) > 0
-           && paint.evaluated.get<CircleColor>().evaluatedValueOr(Color::black()).a > 0
-           && paint.evaluated.get<CircleOpacity>().evaluatedValueOr(1) > 0)
+    passes = (paint.evaluated.get<CircleRadius>().constantOr(1) > 0
+           && paint.evaluated.get<CircleColor>().constantOr(Color::black()).a > 0
+           && paint.evaluated.get<CircleOpacity>().constantOr(1) > 0)
         ? RenderPass::Translucent : RenderPass::None;
 
     return paint.hasTransition();

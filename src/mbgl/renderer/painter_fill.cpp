@@ -116,8 +116,8 @@ void Painter::renderFill(PaintParameters& parameters,
 
         // Only draw the fill when it's opaque and we're drawing opaque fragments,
         // or when it's translucent and we're drawing translucent fragments.
-        if ((properties.get<FillColor>().evaluatedValueOr(Color()).a >= 1.0f
-          && properties.get<FillOpacity>().evaluatedValueOr(0) >= 1.0f) == (pass == RenderPass::Opaque)) {
+        if ((properties.get<FillColor>().constantOr(Color()).a >= 1.0f
+          && properties.get<FillOpacity>().constantOr(0) >= 1.0f) == (pass == RenderPass::Opaque)) {
             draw(1,
                  parameters.programs.fill,
                  gl::Triangles(),

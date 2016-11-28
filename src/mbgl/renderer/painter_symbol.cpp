@@ -126,7 +126,7 @@ void Painter::renderSymbol(PaintParameters& parameters,
             *bucket.collisionBox.vertexBuffer,
             *bucket.collisionBox.indexBuffer,
             bucket.collisionBox.segments,
-            style::PaintProperties<>::Evaluated()
+            {}
         );
     }
 }

@@ -34,6 +34,7 @@ public:
               const typename Attributes::Bindings& attributeBindings_) const {
         if (!vao) {
             vao = context.createVertexArray();
+            context.vertexBuffer.setDirty();
         }
 
         context.vertexArrayObject = *vao;

@@ -31,15 +31,37 @@ private:
 };
 
 template <class T>
-class PossiblyEvaluatedProperty : public variant<T, PropertyFunction<T>> {
+class PossiblyEvaluatedProperty {
 public:
-    using variant<T, PropertyFunction<T>>::variant;
+    PossiblyEvaluatedProperty() = default;
 
-    T evaluate(float z, const GeometryTileFeature&) const;
+    PossiblyEvaluatedProperty(T t)
+        : value(std::move(t))
+        {}
 
-    T evaluatedValueOr(const T& other) const {
-        return this->template is<T>() ? this->template get<T>() : other;
+    PossiblyEvaluatedProperty(PropertyFunction<T> t)
+        : value(std::move(t))
+        {}
+
+    bool isConstant() const { return value.template is<T>(); };
+    bool isVariable() const { return !value.template is<T>(); };
+
+    optional<T> constant() const {
+        return isConstant() ? value.template get<T>() : optional<T>();
     }
+
+    T constantOr(const T& t) const {
+        return constant().value_or(t);
+    }
+
+    T evaluate(float, const GeometryTileFeature& feature) const {
+        return value.match(
+            [&] (const T& t) { return t; },
+            [&] (const PropertyFunction<T>& t) { return t.evaluate(feature); });
+    }
+
+private:
+    variant<T, PropertyFunction<T>> value;
 };
 
 template <typename T>
@@ -100,8 +122,8 @@ struct Interpolator<style::PossiblyEvaluatedProperty<T>> {
     style::PossiblyEvaluatedProperty<T> operator()(const style::PossiblyEvaluatedProperty<T>& a,
                                                    const style::PossiblyEvaluatedProperty<T>& b,
                                                    const double t) const {
-        if (a.template is<T>() && b.template is<T>()) {
-            return interpolate(a.template get<T>(), b.template get<T>(), t);
+        if (a.isConstant() && b.isConstant()) {
+            return interpolate(*a.constant(), *b.constant(), t);
         } else {
             return a;
         }

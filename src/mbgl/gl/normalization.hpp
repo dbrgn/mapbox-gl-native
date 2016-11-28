@@ -13,6 +13,8 @@ class Normalized {
 public:
     T value;
 
+    Normalized() : value(0) {}
+
     explicit Normalized(float f)
         : value(static_cast<T>(std::numeric_limits<T>::max() * util::clamp(f, 0.0f, 1.0f))) {
         assert(f >= 0.0f);

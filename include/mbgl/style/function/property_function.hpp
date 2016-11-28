@@ -2,8 +2,12 @@
 
 #include <vector>
 #include <utility>
+#include <string>
 
 namespace mbgl {
+
+class GeometryTileFeature;
+
 namespace style {
 
 template <typename T>
@@ -14,6 +18,8 @@ public:
 
     PropertyFunction(std::string property_, Stops stops_, float base_)
         : property(std::move(property_)), base(base_), stops(std::move(stops_)) {}
+
+    T evaluate(const GeometryTileFeature&) const;
 
     const std::string& getProperty() const { return property; }
     float getBase() const { return base; }

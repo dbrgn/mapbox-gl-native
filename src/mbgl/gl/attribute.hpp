@@ -15,32 +15,48 @@ namespace gl {
 template <class T, std::size_t N>
 class VariableAttributeBinding {
 public:
+    VariableAttributeBinding(BufferID vertexBuffer_,
+                             std::size_t vertexSize_,
+                             std::size_t attributeOffset_)
+        : vertexBuffer(vertexBuffer_),
+          vertexSize(vertexSize_),
+          attributeOffset(attributeOffset_)
+        {}
+
+    void bind(Context&, AttributeLocation, std::size_t vertexOffset) const;
+
+    friend bool operator==(const VariableAttributeBinding& lhs,
+                           const VariableAttributeBinding& rhs) {
+        return lhs.vertexBuffer == rhs.vertexBuffer
+            && lhs.vertexSize == rhs.vertexSize
+            && lhs.attributeOffset == rhs.attributeOffset;
+    }
+
+private:
     BufferID vertexBuffer;
     std::size_t vertexSize;
     std::size_t attributeOffset;
-
-    void bind(Context&, AttributeLocation, std::size_t vertexOffset) const;
 };
-
-template <class T, std::size_t N>
-bool operator==(const VariableAttributeBinding<T, N>& lhs, const VariableAttributeBinding<T, N>& rhs) {
-    return lhs.vertexBuffer == rhs.vertexBuffer
-        && lhs.vertexSize == rhs.vertexSize
-        && lhs.attributeOffset == rhs.attributeOffset;
-}
 
 template <class T, std::size_t N>
 class ConstantAttributeBinding {
 public:
-    std::array<T, N> value;
+    ConstantAttributeBinding() { value.fill(T()); }
+
+    explicit ConstantAttributeBinding(std::array<T, N> value_)
+        : value(std::move(value_))
+        {}
 
     void bind(Context&, AttributeLocation, std::size_t) const;
-};
 
-template <class T, std::size_t N>
-bool operator==(const ConstantAttributeBinding<T, N>& lhs, const ConstantAttributeBinding<T, N>& rhs) {
-    return lhs.value == rhs.value;
-}
+    friend bool operator==(const ConstantAttributeBinding& lhs,
+                           const ConstantAttributeBinding& rhs) {
+        return lhs.value == rhs.value;
+    }
+
+private:
+    std::array<T, N> value;
+};
 
 template <class Tag, class T, std::size_t N>
 class Attribute {
@@ -53,8 +69,8 @@ public:
     using Location = AttributeLocation;
 
     using Binding = variant<
-        VariableBinding,
-        ConstantBinding>;
+        ConstantBinding,
+        VariableBinding>;
 
     static void bind(Context& context,
                      const Location& location,

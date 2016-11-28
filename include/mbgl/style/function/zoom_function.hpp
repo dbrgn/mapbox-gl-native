@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 #include <utility>
 
@@ -13,7 +14,9 @@ public:
     using Stops = std::vector<Stop>;
 
     ZoomFunction(Stops stops_, float base_)
-        : base(base_), stops(std::move(stops_)) {}
+        : base(base_), stops(std::move(stops_)) {
+        assert(stops.size() > 0);
+    }
 
     T evaluate(float z) const;
 

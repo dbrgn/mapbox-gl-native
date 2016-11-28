@@ -154,7 +154,7 @@ public:
     using VertexBuffer = gl::VertexBuffer<Vertex>;
 
     static optional<VertexVector> vertexVector(const EvaluatedType& propertyValue) {
-        if (!propertyValue.template is<T>()) {
+        if (propertyValue.isVariable()) {
             return VertexVector();
         } else {
             return {};
@@ -166,7 +166,7 @@ public:
                                      const GeometryTileFeature& feature,
                                      float z,
                                      std::size_t length) {
-        assert(propertyValue.template is<T>() != bool(vector));
+        assert(propertyValue.isVariable() == bool(vector));
         if (vector) {
             AttributeValue value = Attribute::value(propertyValue.evaluate(z, feature));
             for (std::size_t i = (*vector).vertexSize(); i < length; ++i) {
@@ -186,9 +186,9 @@ public:
 
     static void setAttributeBindingIfConstant(AttributeBinding& binding,
                                               const EvaluatedType& propertyValue) {
-        if (propertyValue.template is<T>()) {
+        if (propertyValue.isConstant()) {
             binding = typename Attribute::ConstantBinding {
-                Attribute::value(propertyValue.template get<T>())
+                Attribute::value(*propertyValue.constant())
             };
         }
     }

@@ -1,5 +1,6 @@
-#include <mbgl/style/function/zoom_function.hpp>
+#include <mbgl/style/function/property_function.hpp>
 #include <mbgl/style/types.hpp>
+#include <mbgl/tile/geometry_tile_data.hpp>
 #include <mbgl/util/color.hpp>
 #include <mbgl/util/interpolate.hpp>
 
@@ -10,7 +11,29 @@ namespace mbgl {
 namespace style {
 
 template <typename T>
-T ZoomFunction<T>::evaluate(float z) const {
+T PropertyFunction<T>::evaluate(const GeometryTileFeature& feature) const {
+    optional<Value> v = feature.getValue(property);
+    if (!v) {
+        return T();
+    }
+
+    optional<float> z = v->match(
+        [] (uint64_t t) {
+            return optional<float>(t);
+        },
+        [] (int64_t t) {
+            return optional<float>(t);
+        },
+        [] (double t) {
+            return optional<float>(t);
+        },
+        [] (auto) {
+            return optional<float>();
+        });
+    if (!z) {
+        return T();
+    }
+
     bool smaller = false;
     float smaller_z = 0.0f;
     T smaller_val = T();
@@ -21,12 +44,12 @@ T ZoomFunction<T>::evaluate(float z) const {
     for (uint32_t i = 0; i < stops.size(); i++) {
         float stop_z = stops[i].first;
         T stop_val = stops[i].second;
-        if (stop_z <= z && (!smaller || smaller_z < stop_z)) {
+        if (stop_z <= *z && (!smaller || smaller_z < stop_z)) {
             smaller = true;
             smaller_z = stop_z;
             smaller_val = stop_val;
         }
-        if (stop_z >= z && (!larger || larger_z > stop_z)) {
+        if (stop_z >= *z && (!larger || larger_z > stop_z)) {
             larger = true;
             larger_z = stop_z;
             larger_val = stop_val;
@@ -38,7 +61,7 @@ T ZoomFunction<T>::evaluate(float z) const {
             return smaller_val;
         }
         const float zoomDiff = larger_z - smaller_z;
-        const float zoomProgress = z - smaller_z;
+        const float zoomProgress = *z - smaller_z;
         if (base == 1.0f) {
             const float t = zoomProgress / zoomDiff;
             return util::interpolate(smaller_val, larger_val, t);
@@ -51,30 +74,13 @@ T ZoomFunction<T>::evaluate(float z) const {
     } else if (smaller) {
         return smaller_val;
     } else {
+        assert(false);
         return T();
     }
 }
 
-template class ZoomFunction<bool>;
-template class ZoomFunction<float>;
-template class ZoomFunction<Color>;
-template class ZoomFunction<std::vector<float>>;
-template class ZoomFunction<std::vector<std::string>>;
-template class ZoomFunction<std::array<float, 2>>;
-template class ZoomFunction<std::array<float, 4>>;
-
-template class ZoomFunction<std::string>;
-template class ZoomFunction<TranslateAnchorType>;
-template class ZoomFunction<RotateAnchorType>;
-template class ZoomFunction<CirclePitchScaleType>;
-template class ZoomFunction<LineCapType>;
-template class ZoomFunction<LineJoinType>;
-template class ZoomFunction<SymbolPlacementType>;
-template class ZoomFunction<TextAnchorType>;
-template class ZoomFunction<TextJustifyType>;
-template class ZoomFunction<TextTransformType>;
-template class ZoomFunction<AlignmentType>;
-template class ZoomFunction<IconTextFitType>;
+template class PropertyFunction<float>;
+template class PropertyFunction<Color>;
 
 } // namespace style
 } // namespace mbgl
