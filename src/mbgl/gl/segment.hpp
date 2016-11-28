@@ -31,7 +31,7 @@ public:
     void bind(Context& context,
               BufferID indexBuffer_,
               const typename Attributes::Locations& attributeLocations,
-              const typename Attributes::Values& attributeValues_) const {
+              const typename Attributes::Bindings& attributeBindings_) const {
         if (!vao) {
             vao = context.createVertexArray();
         }
@@ -44,11 +44,11 @@ public:
             context.elementBuffer = indexBuffer_;
         }
 
-        if (attributeValues != attributeValues_) {
-            attributeValues = attributeValues_;
+        if (attributeBindings != attributeBindings_) {
+            attributeBindings = attributeBindings_;
             Attributes::bind(context,
                              attributeLocations,
-                             attributeValues_,
+                             attributeBindings_,
                              vertexOffset);
         }
     }
@@ -56,7 +56,7 @@ public:
 private:
     mutable optional<UniqueVertexArray> vao;
     mutable optional<BufferID> indexBuffer;
-    mutable optional<typename Attributes::Values> attributeValues;
+    mutable optional<typename Attributes::Bindings> attributeBindings;
 };
 
 template <class Attributes>

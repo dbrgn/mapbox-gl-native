@@ -34,7 +34,7 @@ void Painter::renderLine(PaintParameters& parameters,
             *bucket.vertexBuffer,
             *bucket.indexBuffer,
             bucket.segments,
-            bucket.paintData.attributeValues()
+            bucket.paintData.bindings()
         );
     };
 

@@ -26,7 +26,7 @@ void Painter::renderClippingMask(const UnwrappedTileID& tileID, const ClipID& cl
         tileVertexBuffer,
         tileTriangleIndexBuffer,
         tileTriangleSegments,
-        FillProgram::PaintAttributeValues()
+        FillProgram::PaintAttributeBindings()
     );
 }
 

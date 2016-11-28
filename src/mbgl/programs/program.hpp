@@ -22,7 +22,7 @@ public:
 
     using PaintAttributeData = PaintAttributeData<typename PaintProperties::Properties,
                                                   typename PaintProperties::DataDrivenProperties>;
-    using PaintAttributeValues = typename PaintAttributeData::Attributes::Values;
+    using PaintAttributeBindings = typename PaintAttributeData::Attributes::Bindings;
     using PaintAttributes = typename PaintAttributeData::Attributes;
 
     using Attributes = gl::ConcatenateAttributes<LayoutAttributes, PaintAttributes>;
@@ -62,7 +62,7 @@ public:
               const gl::VertexBuffer<LayoutVertex>& layoutVertexBuffer,
               const gl::IndexBuffer<DrawMode>& indexBuffer,
               const gl::SegmentVector<Attributes>& segments,
-              const PaintAttributeValues& paintAttributeValues) {
+              const PaintAttributeBindings& paintAttributeBindings) {
         program.draw(
             context,
             std::move(drawMode),
@@ -70,8 +70,8 @@ public:
             std::move(stencilMode),
             std::move(colorMode),
             std::move(uniformValues),
-            LayoutAttributes::allVariableValues(layoutVertexBuffer)
-                .concat(paintAttributeValues),
+            LayoutAttributes::allVariableBindings(layoutVertexBuffer)
+                .concat(paintAttributeBindings),
             indexBuffer,
             segments
         );

@@ -35,10 +35,10 @@ public:
      */
     static LayoutVertex vertex(Point<int16_t> p, float ex, float ey) {
         return LayoutVertex {
-            {
+            {{
                 static_cast<int16_t>((p.x * 2) + ((ex + 1) / 2)),
                 static_cast<int16_t>((p.y * 2) + ((ey + 1) / 2))
-            }
+            }}
         };
     }
 };

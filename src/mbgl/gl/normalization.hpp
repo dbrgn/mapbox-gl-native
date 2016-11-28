@@ -14,11 +14,16 @@ public:
     T value;
 
     explicit Normalized(float f)
-        : value(static_cast<uint8_t>(std::numeric_limits<uint8_t>::max() * util::clamp(f, 0.0f, 1.0f))) {
+        : value(static_cast<T>(std::numeric_limits<T>::max() * util::clamp(f, 0.0f, 1.0f))) {
         assert(f >= 0.0f);
         assert(f <= 1.0f);
     }
 };
+
+template <class T>
+bool operator==(const Normalized<T>& lhs, const Normalized<T>& rhs) {
+    return lhs.value == rhs.value;
+}
 
 } // namespace gl
 } // namespace mbgl

@@ -60,7 +60,7 @@ void Painter::renderFill(PaintParameters& parameters,
                 *bucket.vertexBuffer,
                 indexBuffer,
                 segments,
-                bucket.paintData.attributeValues()
+                bucket.paintData.bindings()
             );
         };
 
@@ -102,7 +102,7 @@ void Painter::renderFill(PaintParameters& parameters,
                 *bucket.vertexBuffer,
                 indexBuffer,
                 segments,
-                bucket.paintData.attributeValues()
+                bucket.paintData.bindings()
             );
         };
 

@@ -147,6 +147,7 @@ public:
 
     using Attribute = A;
     using AttributeValue = typename Attribute::Value;
+    using AttributeBinding = typename Attribute::Binding;
 
     using Vertex = typename gl::Attributes<A>::Vertex;
     using VertexVector = gl::VertexVector<Vertex>;
@@ -167,9 +168,9 @@ public:
                                      std::size_t length) {
         assert(propertyValue.template is<T>() != bool(vector));
         if (vector) {
-            T value = propertyValue.evaluate(z, feature);
+            AttributeValue value = Attribute::value(propertyValue.evaluate(z, feature));
             for (std::size_t i = (*vector).vertexSize(); i < length; ++i) {
-                (*vector).emplace_back(value);
+                (*vector).emplace_back(Vertex { value });
             }
         }
     }
@@ -183,17 +184,19 @@ public:
         }
     }
 
-    static void setAttributeValueIfConstant(AttributeValue& attributeValue,
-                                            const EvaluatedType& propertyValue) {
+    static void setAttributeBindingIfConstant(AttributeBinding& binding,
+                                              const EvaluatedType& propertyValue) {
         if (propertyValue.template is<T>()) {
-            attributeValue = Attribute::constantValue(propertyValue.template get<T>());
+            binding = typename Attribute::ConstantBinding {
+                Attribute::value(propertyValue.template get<T>())
+            };
         }
     }
 
-    static void setAttributeValueIfVariable(AttributeValue& attributeValue,
-                                            const optional<VertexBuffer>& vertexBuffer) {
+    static void setAttributeBindingIfVariable(AttributeBinding& binding,
+                                              const optional<VertexBuffer>& vertexBuffer) {
         if (vertexBuffer) {
-            attributeValue = gl::Attributes<Attribute>::allVariableValues(*vertexBuffer)
+            binding = gl::Attributes<Attribute>::allVariableBindings(*vertexBuffer)
                 .template get<Attribute>();
         }
     }

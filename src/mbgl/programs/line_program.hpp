@@ -60,11 +60,11 @@ public:
      */
     static LayoutVertex layoutVertex(Point<int16_t> p, Point<double> e, Point<bool> t, int8_t dir, int32_t linesofar = 0) {
         return LayoutVertex {
-            {
+            {{
                 static_cast<int16_t>((p.x * 2) | t.x),
                 static_cast<int16_t>((p.y * 2) | t.y)
-            },
-            {
+            }},
+            {{
                 // add 128 to store an byte in an unsigned byte
                 static_cast<uint8_t>(::round(extrudeScale * e.x) + 128),
                 static_cast<uint8_t>(::round(extrudeScale * e.y) + 128),
@@ -81,7 +81,7 @@ public:
                 // so we need to shift the linesofar.
                 static_cast<uint8_t>(((dir == 0 ? 0 : (dir < 0 ? -1 : 1 )) + 1) | ((linesofar & 0x3F) << 2)),
                 static_cast<uint8_t>(linesofar >> 6)
-            }
+            }}
         };
     }
 

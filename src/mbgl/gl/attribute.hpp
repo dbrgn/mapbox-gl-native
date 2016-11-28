@@ -13,7 +13,7 @@ namespace mbgl {
 namespace gl {
 
 template <class T, std::size_t N>
-class VariableAttributeValue {
+class VariableAttributeBinding {
 public:
     BufferID vertexBuffer;
     std::size_t vertexSize;
@@ -23,45 +23,45 @@ public:
 };
 
 template <class T, std::size_t N>
-bool operator==(const VariableAttributeValue<T, N>& lhs, const VariableAttributeValue<T, N>& rhs) {
+bool operator==(const VariableAttributeBinding<T, N>& lhs, const VariableAttributeBinding<T, N>& rhs) {
     return lhs.vertexBuffer == rhs.vertexBuffer
         && lhs.vertexSize == rhs.vertexSize
         && lhs.attributeOffset == rhs.attributeOffset;
 }
 
 template <class T, std::size_t N>
-class ConstantAttributeValue {
+class ConstantAttributeBinding {
 public:
-    T value[N];
+    std::array<T, N> value;
 
     void bind(Context&, AttributeLocation, std::size_t) const;
 };
 
 template <class T, std::size_t N>
-bool operator==(const ConstantAttributeValue<T, N>& lhs, const ConstantAttributeValue<T, N>& rhs) {
+bool operator==(const ConstantAttributeBinding<T, N>& lhs, const ConstantAttributeBinding<T, N>& rhs) {
     return lhs.value == rhs.value;
 }
 
 template <class Tag, class T, std::size_t N>
 class Attribute {
 public:
-    using Type = T[N];
+    using Value = std::array<T, N>;
 
-    using VariableValue = VariableAttributeValue<T, N>;
-    using ConstantValue = ConstantAttributeValue<T, N>;
+    using VariableBinding = VariableAttributeBinding<T, N>;
+    using ConstantBinding = ConstantAttributeBinding<T, N>;
 
     using Location = AttributeLocation;
 
-    using Value = variant<
-        VariableValue,
-        ConstantValue>;
+    using Binding = variant<
+        VariableBinding,
+        ConstantBinding>;
 
     static void bind(Context& context,
                      const Location& location,
-                     const Value& value_,
+                     const Binding& binding_,
                      std::size_t vertexOffset) {
-        Value::visit(value_, [&] (const auto& value) {
-            value.bind(context, location, vertexOffset);
+        Binding::visit(binding_, [&] (const auto& binding) {
+            binding.bind(context, location, vertexOffset);
         });
     }
 };
@@ -90,7 +90,7 @@ public:
 template <class A1>
 class Vertex<A1> {
 public:
-    typename A1::Type a1;
+    typename A1::Value a1;
 
     using VertexType = Vertex<A1>;
     static const std::size_t attributeOffsets[1];
@@ -99,8 +99,8 @@ public:
 template <class A1, class A2>
 class Vertex<A1, A2> {
 public:
-    typename A1::Type a1;
-    typename A2::Type a2;
+    typename A1::Value a1;
+    typename A2::Value a2;
 
     using VertexType = Vertex<A1, A2>;
     static const std::size_t attributeOffsets[2];
@@ -109,9 +109,9 @@ public:
 template <class A1, class A2, class A3>
 class Vertex<A1, A2, A3> {
 public:
-    typename A1::Type a1;
-    typename A2::Type a2;
-    typename A3::Type a3;
+    typename A1::Value a1;
+    typename A2::Value a2;
+    typename A3::Value a3;
 
     using VertexType = Vertex<A1, A2, A3>;
     static const std::size_t attributeOffsets[3];
@@ -120,10 +120,10 @@ public:
 template <class A1, class A2, class A3, class A4>
 class Vertex<A1, A2, A3, A4> {
 public:
-    typename A1::Type a1;
-    typename A2::Type a2;
-    typename A3::Type a3;
-    typename A4::Type a4;
+    typename A1::Value a1;
+    typename A2::Value a2;
+    typename A3::Value a3;
+    typename A4::Value a4;
 
     using VertexType = Vertex<A1, A2, A3, A4>;
     static const std::size_t attributeOffsets[4];
@@ -132,11 +132,11 @@ public:
 template <class A1, class A2, class A3, class A4, class A5>
 class Vertex<A1, A2, A3, A4, A5> {
 public:
-    typename A1::Type a1;
-    typename A2::Type a2;
-    typename A3::Type a3;
-    typename A4::Type a4;
-    typename A5::Type a5;
+    typename A1::Value a1;
+    typename A2::Value a2;
+    typename A3::Value a3;
+    typename A4::Value a4;
+    typename A5::Value a5;
 
     using VertexType = Vertex<A1, A2, A3, A4, A5>;
     static const std::size_t attributeOffsets[5];
@@ -186,7 +186,7 @@ class Attributes {
 public:
     using Types = TypeList<As...>;
     using Locations = IndexedTuple<TypeList<As...>, TypeList<typename As::Location...>>;
-    using Values = IndexedTuple<TypeList<As...>, TypeList<typename As::Value...>>;
+    using Bindings = IndexedTuple<TypeList<As...>, TypeList<typename As::Binding...>>;
 
     using Vertex = detail::Vertex<As...>;
 
@@ -198,11 +198,11 @@ public:
     }
 
     template <class DrawMode>
-    static Values allVariableValues(const VertexBuffer<Vertex, DrawMode>& buffer) {
+    static Bindings allVariableBindings(const VertexBuffer<Vertex, DrawMode>& buffer) {
         static_assert(std::is_standard_layout<Vertex>::value, "vertex type must use standard layout");
 
-        return Values {
-            typename As::VariableValue {
+        return Bindings {
+            typename As::VariableBinding {
                 buffer.buffer,
                 sizeof(Vertex),
                 Vertex::attributeOffsets[Index<As>]
@@ -210,10 +210,10 @@ public:
         };
     }
 
-    static void bind(Context& context, const Locations& locations, const Values& values, std::size_t vertexOffset) {
+    static void bind(Context& context, const Locations& locations, const Bindings& bindings, std::size_t vertexOffset) {
         util::ignore({ (As::bind(context,
                                  locations.template get<As>(),
-                                 values.template get<As>(),
+                                 bindings.template get<As>(),
                                  vertexOffset), 0)... });
     }
 };

@@ -29,7 +29,7 @@ struct a_offset : gl::Attribute<a_offset<N>, int16_t, N> {
 struct a_color : gl::Attribute<a_color, gl::Normalized<uint8_t>, 4> {
     static constexpr auto name = "a_color";
 
-    static ConstantValue constantValue(const Color& color) {
+    static Value value(const Color& color) {
         return {{
             gl::Normalized<uint8_t>(color.r),
             gl::Normalized<uint8_t>(color.g),
@@ -42,7 +42,7 @@ struct a_color : gl::Attribute<a_color, gl::Normalized<uint8_t>, 4> {
 struct a_outline_color : gl::Attribute<a_outline_color, gl::Normalized<uint8_t>, 4> {
     static constexpr auto name = "a_outline_color";
 
-    static ConstantValue constantValue(const Color& color) {
+    static Value value(const Color& color) {
         return {{
             gl::Normalized<uint8_t>(color.r),
             gl::Normalized<uint8_t>(color.g),
@@ -55,7 +55,7 @@ struct a_outline_color : gl::Attribute<a_outline_color, gl::Normalized<uint8_t>,
 struct a_opacity : gl::Attribute<a_opacity, gl::Normalized<uint8_t>, 1> {
     static constexpr auto name = "a_opacity";
 
-    static ConstantValue constantValue(float opacity) {
+    static Value value(float opacity) {
         return {{ gl::Normalized<uint8_t>(opacity) }};
     }
 };
@@ -63,7 +63,7 @@ struct a_opacity : gl::Attribute<a_opacity, gl::Normalized<uint8_t>, 1> {
 struct a_blur : gl::Attribute<a_blur, float, 1> {
     static constexpr auto name = "a_blur";
 
-    static ConstantValue constantValue(float blur) {
+    static Value value(float blur) {
         return {{ blur }};
     }
 };
@@ -71,7 +71,7 @@ struct a_blur : gl::Attribute<a_blur, float, 1> {
 struct a_radius : gl::Attribute<a_radius, float, 1> {
     static constexpr auto name = "a_radius";
 
-    static ConstantValue constantValue(float radius) {
+    static Value value(float radius) {
         return {{ radius }};
     }
 };
@@ -79,7 +79,7 @@ struct a_radius : gl::Attribute<a_radius, float, 1> {
 struct a_width : gl::Attribute<a_width, float, 1> {
     static constexpr auto name = "a_width";
 
-    static ConstantValue constantValue(float width) {
+    static Value value(float width) {
         return {{ width }};
     }
 };
@@ -87,7 +87,7 @@ struct a_width : gl::Attribute<a_width, float, 1> {
 struct a_gap_width : gl::Attribute<a_gap_width, float, 1> {
     static constexpr auto name = "a_gapwidth";
 
-    static ConstantValue constantValue(float width) {
+    static Value value(float width) {
         return {{ width }};
     }
 };
@@ -96,7 +96,7 @@ template <>
 struct a_offset<1> : gl::Attribute<a_offset<1>, int16_t, 1> {
     static constexpr auto name = "a_offset";
 
-    static ConstantValue constantValue(int16_t offset) {
+    static Value value(int16_t offset) {
         return {{ offset }};
     }
 };

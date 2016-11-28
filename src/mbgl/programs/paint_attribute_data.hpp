@@ -20,8 +20,8 @@ public:
           vertexVectors(DDPs::vertexVector(properties.template get<DDPs>())...)
     {
         util::ignore({
-            (DDPs::setAttributeValueIfConstant(attributeValues_.template get<DDPs>(),
-                                               properties.template get<DDPs>()), 0)...
+            (DDPs::setAttributeBindingIfConstant(attributeBindings.template get<DDPs>(),
+                                                 properties.template get<DDPs>()), 0)...
         });
     }
 
@@ -40,14 +40,14 @@ public:
         };
 
         util::ignore({
-            (DDPs::setAttributeValueIfVariable(attributeValues_.template get<DDPs>(),
-                                               vertexBuffers.template get<DDPs>()), 0)...
+            (DDPs::setAttributeBindingIfVariable(attributeBindings.template get<DDPs>(),
+                                                 vertexBuffers.template get<DDPs>()), 0)...
         });
     }
 
-    typename Attributes::Values attributeValues() {
-        return typename Attributes::Values {
-            attributeValues_.template get<DDPs>()...
+    typename Attributes::Bindings bindings() {
+        return typename Attributes::Bindings {
+            attributeBindings.template get<DDPs>()...
         };
     }
 
@@ -57,14 +57,14 @@ private:
 
     using VertexVectors = Tuple<optional<typename DDPs::VertexVector>...>;
     using VertexBuffers = Tuple<optional<typename DDPs::VertexBuffer>...>;
-    using AttributeValues = Tuple<typename DDPs::AttributeValue...>;
+    using AttributeBindings = Tuple<typename DDPs::AttributeBinding...>;
 
     EvaluatedProperties properties;
     float zoom;
 
     VertexVectors vertexVectors;
     VertexBuffers vertexBuffers;
-    AttributeValues attributeValues_;
+    AttributeBindings attributeBindings;
 };
 
 }

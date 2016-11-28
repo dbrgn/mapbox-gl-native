@@ -21,7 +21,7 @@ public:
     using Uniforms = Us;
 
     using UniformValues = typename Uniforms::Values;
-    using AttributeValues = typename Attributes::Values;
+    using AttributeBindings = typename Attributes::Bindings;
 
     Program(Context& context, const std::string& vertexSource, const std::string& fragmentSource)
         : vertexShader(context.createShader(ShaderType::Vertex, vertexSource)),
@@ -37,7 +37,7 @@ public:
               StencilMode stencilMode,
               ColorMode colorMode,
               UniformValues&& uniformValues,
-              AttributeValues&& attributeValues,
+              AttributeBindings&& attributeBindings,
               const IndexBuffer<DrawMode>& indexBuffer,
               const SegmentVector<Attributes>& segments) {
         static_assert(std::is_same<Primitive, typename DrawMode::Primitive>::value, "incompatible draw mode");
@@ -55,7 +55,7 @@ public:
             segment.bind(context,
                          indexBuffer.buffer,
                          attributeLocations,
-                         attributeValues);
+                         attributeBindings);
 
             context.draw(drawMode.primitiveType,
                          segment.indexOffset,
