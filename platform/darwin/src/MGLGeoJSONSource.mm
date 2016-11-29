@@ -95,6 +95,8 @@ const MGLGeoJSONSourceOption MGLGeoJSONSourceOptionSimplificationTolerance = @"M
         NSString *string = [[NSString alloc] initWithData:self.geoJSONData encoding:NSUTF8StringEncoding];
         const auto geojson = mapbox::geojson::parse(string.UTF8String);
         source->setGeoJSON(geojson);
+        _shape = MGLShapeFromGeoJSON(geojson);
+        
     } else {
         mbgl::FeatureCollection featureCollection;
         featureCollection.reserve(self.features.count);

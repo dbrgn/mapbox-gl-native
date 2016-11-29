@@ -3,6 +3,8 @@
 
 #import <mbgl/util/geo.hpp>
 #import <mbgl/util/feature.hpp>
+#import <mbgl/util/geometry.hpp>
+#import <mbgl/style/conversion/geojson.hpp>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ARRAY_OF(MGLShape <MGLFeature> *) *MGLFeaturesFromMBGLFeatures(const std::vector<mbgl::Feature> &features);
 
 id <MGLFeature> MGLFeatureFromMBGLFeature(const mbgl::Feature &feature);
+
+MGLShape* MGLShapeFromGeoJSON(const mapbox::geojson::geojson &geojson);
 
 /**
  Takes an `mbgl::Feature` object, an identifer, and attributes dictionary and
