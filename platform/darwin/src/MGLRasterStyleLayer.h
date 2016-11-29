@@ -17,27 +17,18 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Accessing the Paint Attributes
 
 /**
- The opacity at which the image will be drawn.
+ Increase or reduce the brightness of the image. The value is the maximum brightness.
  
  The default value of this property is an `MGLStyleValue` object containing an `NSNumber` object containing the float `1`. Set this property to `nil` to reset it to the default value.
  */
-@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *rasterOpacity;
+@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *maximumRasterBrightness;
 
 /**
- Rotates hues around the color wheel.
-
- This property is measured in degrees.
+ Increase or reduce the brightness of the image. The value is the minimum brightness.
  
  The default value of this property is an `MGLStyleValue` object containing an `NSNumber` object containing the float `0`. Set this property to `nil` to reset it to the default value.
  */
-@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *rasterHueRotate;
-
-/**
- Increase or reduce the saturation of the image.
- 
- The default value of this property is an `MGLStyleValue` object containing an `NSNumber` object containing the float `0`. Set this property to `nil` to reset it to the default value.
- */
-@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *rasterSaturation;
+@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *minimumRasterBrightness;
 
 /**
  Increase or reduce the contrast of the image.
@@ -56,18 +47,27 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *rasterFadeDuration;
 
 /**
- Increase or reduce the brightness of the image. The value is the minimum brightness.
+ Rotates hues around the color wheel.
+
+ This property is measured in degrees.
  
  The default value of this property is an `MGLStyleValue` object containing an `NSNumber` object containing the float `0`. Set this property to `nil` to reset it to the default value.
  */
-@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *minimumRasterBrightness;
+@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *rasterHueRotate;
 
 /**
- Increase or reduce the brightness of the image. The value is the maximum brightness.
+ The opacity at which the image will be drawn.
  
  The default value of this property is an `MGLStyleValue` object containing an `NSNumber` object containing the float `1`. Set this property to `nil` to reset it to the default value.
  */
-@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *maximumRasterBrightness;
+@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *rasterOpacity;
+
+/**
+ Increase or reduce the saturation of the image.
+ 
+ The default value of this property is an `MGLStyleValue` object containing an `NSNumber` object containing the float `0`. Set this property to `nil` to reset it to the default value.
+ */
+@property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *rasterSaturation;
 
 @end
 
