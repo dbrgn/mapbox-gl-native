@@ -47,6 +47,10 @@ public class Projection {
                 padding[3] / screenDensity);
     }
 
+    int[] getContentPadding() {
+        return contentPadding;
+    }
+
     public void invalidateContentPadding(int[] userLocationViewPadding) {
         setContentPadding(contentPadding, userLocationViewPadding);
     }

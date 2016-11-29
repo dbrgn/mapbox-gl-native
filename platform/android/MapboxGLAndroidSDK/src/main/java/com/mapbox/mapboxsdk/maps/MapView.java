@@ -112,11 +112,6 @@ public class MapView extends FrameLayout {
     private ConnectivityReceiver connectivityReceiver;
     private float screenDensity = 1.0f;
 
-    private int contentPaddingLeft;
-    private int contentPaddingTop;
-    private int contentPaddingRight;
-    private int contentPaddingBottom;
-
     private String styleUrl = Style.MAPBOX_STREETS;
     private boolean styleWasSet = false;
 
@@ -660,26 +655,6 @@ public class MapView extends FrameLayout {
                 }
             }
         });
-    }
-
-    //
-    // Content padding
-    //
-
-    int getContentPaddingLeft() {
-        return contentPaddingLeft;
-    }
-
-    int getContentPaddingTop() {
-        return contentPaddingTop;
-    }
-
-    int getContentPaddingRight() {
-        return contentPaddingRight;
-    }
-
-    int getContentPaddingBottom() {
-        return contentPaddingBottom;
     }
 
     //
@@ -1326,11 +1301,12 @@ public class MapView extends FrameLayout {
     }
 
     private void setWidgetMargins(@NonNull final View view, int left, int top, int right, int bottom) {
+        int contentPadding[] = mapboxMap.getPadding();
         LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-        left += contentPaddingLeft;
-        top += contentPaddingTop;
-        right += contentPaddingRight;
-        bottom += contentPaddingBottom;
+        left += contentPadding[0];
+        top += contentPadding[1];
+        right += contentPadding[2];
+        bottom += contentPadding[3];
         layoutParams.setMargins(left, top, right, bottom);
         view.setLayoutParams(layoutParams);
     }

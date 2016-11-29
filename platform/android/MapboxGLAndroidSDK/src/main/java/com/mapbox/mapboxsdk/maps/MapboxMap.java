@@ -1281,10 +1281,7 @@ public class MapboxMap {
      * @return An array with length 4 in the LTRB order.
      */
     public int[] getPadding() {
-        return new int[]{mapView.getContentPaddingLeft(),
-                mapView.getContentPaddingTop(),
-                mapView.getContentPaddingRight(),
-                mapView.getContentPaddingBottom()};
+        return projection.getContentPadding();
     }
 
     //

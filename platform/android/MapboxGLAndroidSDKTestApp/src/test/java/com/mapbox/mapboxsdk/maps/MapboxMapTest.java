@@ -140,15 +140,6 @@ public class MapboxMapTest {
     }
 
     //
-    // Projection
-    //
-
-    @Test
-    public void testProjection() {
-        assertNotNull("Projection should not be null", mMapboxMap.getProjection());
-    }
-
-    //
     // InfoWindow
     //
 
@@ -192,18 +183,6 @@ public class MapboxMapTest {
     //
     // setters/getters interfaces
     //
-
-    @Test
-    public void testScrollListener() {
-        mMapboxMap.setOnScrollListener(mScrollListener);
-        assertEquals("ScrollListener should match", mScrollListener, mMapboxMap.getOnScrollListener());
-    }
-
-    @Test
-    public void testFlingListener() {
-        mMapboxMap.setOnFlingListener(mFlingListener);
-        assertEquals("FlingListener should match", mFlingListener, mMapboxMap.getOnFlingListener());
-    }
 
     @Test
     public void testFpsListener() {

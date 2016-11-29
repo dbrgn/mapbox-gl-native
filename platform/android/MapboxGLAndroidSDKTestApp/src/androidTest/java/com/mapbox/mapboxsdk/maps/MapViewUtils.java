@@ -30,8 +30,4 @@ public class MapViewUtils {
     public static LatLng getLatLng(MapboxMap mapboxMap) {
         return mapboxMap.getTransform().getCenterCoordinate();
     }
-
-    public static int[] getContentPadding(MapView mapView) {
-        return new int[]{mapView.getContentPaddingLeft(), mapView.getContentPaddingTop(), mapView.getContentPaddingRight(), mapView.getContentPaddingBottom()};
-    }
 }
