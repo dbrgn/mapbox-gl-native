@@ -9,11 +9,11 @@ let spec = _.merge(require('mapbox-gl-style-spec').latest, require('./style-spec
 const prefix = 'MGL';
 const suffix = 'StyleLayer';
 
-// Rename properties and keep _original for use with setters and getters
+// Rename properties and keep `original` for use with setters and getters
 _.forOwn(cocoaConventions, function (properties, kind) {
     _.forOwn(properties, function (newName, oldName) {
         spec[kind][newName] = spec[kind][oldName];
-        spec[kind][newName]["_original"] = oldName;
+        spec[kind][newName].original = oldName;
         delete spec[kind][oldName];
     })
 });
@@ -222,7 +222,7 @@ global.propertyDefault = function (property, layerType) {
 };
 
 global.originalPropertyName = function (property) {
-    return property._original ? property._original : property.name;
+    return property.original || property.name;
 }
 
 global.propertyType = function (property) {
@@ -334,8 +334,8 @@ const layers = Object.keys(spec.layer.type.values).map((type) => {
 
     return {
         type: type,
-        layoutProperties: layoutProperties,
-        paintProperties: paintProperties,
+        layoutProperties: _.sortBy(layoutProperties, ['name']),
+        paintProperties: _.sortBy(paintProperties, ['name']),
         layoutPropertiesByName: spec[`layout_${type}`],
         paintPropertiesByName: spec[`paint_${type}`],
     };
