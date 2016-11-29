@@ -1,6 +1,6 @@
-#import "MGLStyleLayerTests.h"
+#import "MGLMapViewTests.h"
 
-@implementation MGLStyleLayerTests
+@implementation MGLMapViewTests
 
 - (void)setUp {
     [super setUp];
